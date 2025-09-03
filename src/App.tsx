@@ -29,6 +29,9 @@ function App() {
   const { theme, toggleTheme } = useTheme();
   const { user, isAuthenticated, isLoading, login, signup, logout } = useAuth();
 
+  // Test message to see if app is loading
+  console.log('App is loading! Current view:', currentView);
+
   const handleEditAppointment = (appointmentId: string) => {
     setSelectedAppointmentId(appointmentId);
     setShowAppointmentForm(true);
