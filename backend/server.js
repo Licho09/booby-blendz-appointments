@@ -181,6 +181,8 @@ app.post('/api/send-appointment-sms', async (req, res) => {
 });
 
 // Authentication routes
+// REGISTRATION DISABLED - Single user application only
+/*
 app.post('/api/auth/register', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -215,6 +217,7 @@ app.post('/api/auth/register', async (req, res) => {
     });
   }
 });
+*/
 
 app.post('/api/auth/login', async (req, res) => {
   try {

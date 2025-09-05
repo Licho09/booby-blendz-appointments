@@ -1,62 +1,42 @@
 const { supabase, supabaseAdmin } = require('../supabase');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const config = require('../config');
 
 // Authentication functions
 const authService = {
-  // Register a new user
+  // Register a new user - DISABLED for single-user app
   async registerUser(email, password) {
-    try {
-      const passwordHash = await bcrypt.hash(password, 12);
-      
-      const { data, error } = await supabase
-        .from('users')
-        .insert([
-          { email, password_hash: passwordHash }
-        ])
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      // Generate JWT token
-      const token = jwt.sign(
-        { userId: data.id, email: data.email },
-        process.env.JWT_SECRET,
-        { expiresIn: '7d' }
-      );
-
-      return { success: true, user: data, token };
-    } catch (error) {
-      console.error('Registration error:', error);
-      return { success: false, error: error.message };
-    }
+    return { success: false, error: 'User registration is disabled. This is a single-user application.' };
   },
 
-  // Login user
+  // Login user - HARDCODED CREDENTIALS ONLY
   async loginUser(email, password) {
     try {
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('email', email)
-        .single();
-
-      if (error) throw error;
-
-      const isValidPassword = await bcrypt.compare(password, data.password_hash);
-      if (!isValidPassword) {
-        throw new Error('Invalid credentials');
+      // HARDCODED CREDENTIALS - ONLY YOU CAN LOG IN
+      const ALLOWED_EMAIL = config.ALLOWED_EMAIL;
+      const ALLOWED_PASSWORD = config.ALLOWED_PASSWORD;
+      
+      // Check if email and password match hardcoded values
+      if (email !== ALLOWED_EMAIL || password !== ALLOWED_PASSWORD) {
+        throw new Error('Invalid credentials. Access denied.');
       }
+
+      // Create user object for successful login
+      const user = {
+        id: 'single-user-001',
+        email: ALLOWED_EMAIL,
+        created_at: new Date().toISOString()
+      };
 
       // Generate JWT token
       const token = jwt.sign(
-        { userId: data.id, email: data.email },
+        { userId: user.id, email: user.email },
         process.env.JWT_SECRET,
         { expiresIn: '7d' }
       );
 
-      return { success: true, user: data, token };
+      return { success: true, user, token };
     } catch (error) {
       console.error('Login error:', error);
       return { success: false, error: error.message };

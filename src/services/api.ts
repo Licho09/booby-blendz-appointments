@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:3001/api';
+const API_BASE_URL = 'https://booby-blendz-backend.onrender.com/api';
 
 // Helper function to get auth token
 const getAuthToken = (): string | null => {
