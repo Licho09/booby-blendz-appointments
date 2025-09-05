@@ -13,7 +13,11 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL || '*', // Allow all origins for now
+  origin: [
+    'http://localhost:5173', // Local development
+    'https://booby-blendz-appointments.onrender.com', // Deployed frontend
+    process.env.FRONTEND_URL // Environment variable override
+  ].filter(Boolean), // Remove any undefined values
   credentials: true
 }));
 app.use(bodyParser.json());
