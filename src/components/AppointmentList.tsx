@@ -621,7 +621,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
 
       {/* Price Input Modal */}
       {showPriceModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-hidden">
           <div className={`w-full max-w-md rounded-xl shadow-xl ${
             theme === 'dark' ? 'bg-gray-800' : 'bg-white'
           } overflow-hidden`}>
@@ -654,6 +654,8 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                   </div>
                   <input
                     type="number"
+                    inputMode="decimal"
+                    pattern="[0-9]*"
                     value={priceInput}
                     onChange={(e) => setPriceInput(e.target.value)}
                     placeholder="0.00"
