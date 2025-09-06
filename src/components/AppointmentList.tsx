@@ -9,6 +9,7 @@ interface AppointmentListProps {
   onDelete: (appointmentId: string) => void;
   onMarkComplete: (appointmentId: string, price?: number) => void;
   theme: 'light' | 'dark';
+  clientsLoading?: boolean;
 }
 
 const AppointmentList: React.FC<AppointmentListProps> = ({ 
@@ -17,7 +18,8 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
   onEdit, 
   onDelete, 
   onMarkComplete,
-  theme 
+  theme,
+  clientsLoading = false
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState<'all' | 'today' | 'upcoming' | 'pending' | 'completed'>('today');
@@ -52,6 +54,11 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
   };
 
   const getClientName = (clientId: string) => {
+    // If clients are still loading, show a loading state
+    if (clientsLoading) {
+      return 'Loading...';
+    }
+    
     const client = clients.find(c => c.id === clientId);
     return client?.name || 'Unknown Client';
   };

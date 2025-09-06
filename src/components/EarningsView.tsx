@@ -173,8 +173,8 @@ const EarningsView: React.FC<EarningsViewProps> = ({ appointments, onBack, theme
           Earnings Overview
         </h1>
         
-        {/* Time Filter Buttons */}
-        <div className="flex space-x-2 overflow-x-auto mb-6">
+        {/* Desktop: Time Filter Buttons (top) */}
+        <div className="hidden sm:flex space-x-2 overflow-x-auto mb-6">
           {timeFilters.map((filter) => (
             <button
               key={filter.key}
@@ -247,6 +247,25 @@ const EarningsView: React.FC<EarningsViewProps> = ({ appointments, onBack, theme
               <TrendingUp className="w-8 h-8 text-orange-500" />
             </div>
           </div>
+        </div>
+
+        {/* Mobile: Time Filter Buttons (above chart) */}
+        <div className="flex sm:hidden space-x-2 overflow-x-auto mb-4">
+          {timeFilters.map((filter) => (
+            <button
+              key={filter.key}
+              onClick={() => setTimeFilter(filter.key)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${
+                timeFilter === filter.key
+                  ? 'bg-blue-500 text-white'
+                  : theme === 'dark'
+                    ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {filter.label}
+            </button>
+          ))}
         </div>
 
         {/* Bar Chart */}

@@ -25,7 +25,7 @@ function App() {
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
 
   const { appointments, addAppointment, updateAppointment, deleteAppointment } = useAppointments();
-  const { clients, addClient, updateClient, deleteClient } = useClients();
+  const { clients, addClient, updateClient, deleteClient, isLoading: clientsLoading } = useClients();
   const { theme, toggleTheme } = useTheme();
   const { user, isAuthenticated, isLoading, login, signup, logout } = useAuth();
 
@@ -228,6 +228,7 @@ function App() {
             clients={clients}
             onEdit={handleEditAppointment}
             onDelete={deleteAppointment}
+            clientsLoading={clientsLoading}
             onMarkComplete={async (appointmentId, price) => {
               try {
                 const appointment = appointments.find(apt => apt.id === appointmentId);
