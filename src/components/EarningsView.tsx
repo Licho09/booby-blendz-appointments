@@ -204,7 +204,7 @@ const EarningsView: React.FC<EarningsViewProps> = ({ appointments, onBack, theme
                 }`}>
                   Total Earnings
                 </p>
-                <p className="text-2xl sm:text-2xl font-bold text-green-500">
+                <p className="text-2xl sm:text-2xl font-bold text-green-500 mt-1">
                   ${chartTotalEarnings}
                 </p>
               </div>
@@ -222,7 +222,7 @@ const EarningsView: React.FC<EarningsViewProps> = ({ appointments, onBack, theme
                 }`}>
                   Appointments
                 </p>
-                <p className="text-2xl sm:text-2xl font-bold text-blue-500">
+                <p className="text-2xl sm:text-2xl font-bold text-blue-500 mt-1">
                   {totalAppointments}
                 </p>
               </div>
