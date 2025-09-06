@@ -669,9 +669,6 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                     autoFocus
                   />
                 </div>
-                <div className="text-center text-sm text-gray-500">
-                  Enter the amount in dollars (e.g., 25.00)
-                </div>
               </div>
 
               {/* Actions */}
@@ -691,7 +688,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                   disabled={!priceInput || parseFloat(priceInput) < 0}
                   className="flex-1 px-4 py-3 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Complete & Save
+                  Save
                 </button>
               </div>
             </div>
