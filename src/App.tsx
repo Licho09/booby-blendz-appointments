@@ -290,7 +290,7 @@ function App() {
             
             <button
               onClick={() => setShowAppointmentForm(true)}
-              className="w-16 h-16 bg-gradient-to-br from-teal-400 to-blue-500 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 mx-4"
+              className="w-16 h-16 bg-gradient-to-br from-teal-400 to-blue-500 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 mx-4 -mt-2 sm:mt-0"
             >
               <Plus className="w-8 h-8 text-white stroke-4" />
             </button>
