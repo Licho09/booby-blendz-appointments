@@ -193,58 +193,58 @@ const EarningsView: React.FC<EarningsViewProps> = ({ appointments, onBack, theme
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className={`p-4 rounded-xl ${
+        <div className="grid grid-cols-3 gap-2 sm:gap-4">
+          <div className={`p-2 sm:p-4 rounded-xl ${
             theme === 'dark' ? 'bg-gray-700' : 'bg-green-50'
           }`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm font-medium ${
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+              <div className="text-center sm:text-left">
+                <p className={`text-xs sm:text-sm font-medium ${
                   theme === 'dark' ? 'text-gray-300' : 'text-green-600'
                 }`}>
                   Total Earnings
                 </p>
-                <p className="text-2xl font-bold text-green-500">
+                <p className="text-lg sm:text-2xl font-bold text-green-500">
                   ${chartTotalEarnings}
                 </p>
               </div>
-              <DollarSign className="w-8 h-8 text-green-500" />
+              <DollarSign className="w-6 h-6 sm:w-8 sm:h-8 text-green-500 mx-auto sm:mx-0 mt-1 sm:mt-0" />
             </div>
           </div>
 
-          <div className={`p-4 rounded-xl ${
+          <div className={`p-2 sm:p-4 rounded-xl ${
             theme === 'dark' ? 'bg-gray-700' : 'bg-blue-50'
           }`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm font-medium ${
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+              <div className="text-center sm:text-left">
+                <p className={`text-xs sm:text-sm font-medium ${
                   theme === 'dark' ? 'text-gray-300' : 'text-blue-600'
                 }`}>
                   Appointments
                 </p>
-                <p className="text-2xl font-bold text-blue-500">
+                <p className="text-lg sm:text-2xl font-bold text-blue-500">
                   {totalAppointments}
                 </p>
               </div>
-              <Calendar className="w-8 h-8 text-blue-500" />
+              <Calendar className="w-6 h-6 sm:w-8 sm:h-8 text-blue-500 mx-auto sm:mx-0 mt-1 sm:mt-0" />
             </div>
           </div>
 
-          <div className={`p-4 rounded-xl ${
+          <div className={`p-2 sm:p-4 rounded-xl ${
             theme === 'dark' ? 'bg-gray-700' : 'bg-orange-50'
           }`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm font-medium ${
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+              <div className="text-center sm:text-left">
+                <p className={`text-xs sm:text-sm font-medium ${
                   theme === 'dark' ? 'text-gray-300' : 'text-orange-600'
                 }`}>
                   Average per Appointment
                 </p>
-                <p className="text-2xl font-bold text-orange-500">
+                <p className="text-lg sm:text-2xl font-bold text-orange-500">
                   ${averagePerAppointment.toFixed(2)}
                 </p>
               </div>
-              <TrendingUp className="w-8 h-8 text-orange-500" />
+              <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8 text-orange-500 mx-auto sm:mx-0 mt-1 sm:mt-0" />
             </div>
           </div>
         </div>
