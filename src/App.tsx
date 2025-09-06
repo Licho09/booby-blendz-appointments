@@ -32,6 +32,13 @@ function App() {
   // Test message to see if app is loading
   console.log('App is loading! Current view:', currentView);
 
+  // Function to handle view changes with scroll reset
+  const handleViewChange = (newView: View) => {
+    setCurrentView(newView);
+    // Reset scroll position to top when switching views
+    window.scrollTo(0, 0);
+  };
+
   const handleEditAppointment = (appointmentId: string) => {
     setSelectedAppointmentId(appointmentId);
     setShowAppointmentForm(true);
@@ -257,7 +264,7 @@ function App() {
         {currentView === 'earnings' && (
           <EarningsView
             appointments={appointments}
-            onBack={() => setCurrentView('appointments')}
+            onBack={() => handleViewChange('appointments')}
             theme={theme}
           />
         )}
@@ -269,7 +276,7 @@ function App() {
       } border-t ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'} p-4`}>
         <div className="flex justify-around items-center max-w-md mx-auto">
           <button
-            onClick={() => setCurrentView('appointments')}
+            onClick={() => handleViewChange('appointments')}
             className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors ${
               currentView === 'appointments'
                 ? 'text-blue-500'
@@ -288,7 +295,7 @@ function App() {
           </button>
           
           <button
-            onClick={() => setCurrentView('earnings')}
+            onClick={() => handleViewChange('earnings')}
             className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors ${
               currentView === 'earnings'
                 ? 'text-blue-500'
