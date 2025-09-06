@@ -198,7 +198,7 @@ const EarningsView: React.FC<EarningsViewProps> = ({ appointments, onBack, theme
             theme === 'dark' ? 'bg-gray-700' : 'bg-green-50'
           }`}>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-              <div className="text-center sm:text-left">
+              <div className="text-center sm:text-left w-full sm:w-auto">
                 <p className={`text-xs sm:text-sm font-medium ${
                   theme === 'dark' ? 'text-gray-300' : 'text-green-600'
                 }`}>
@@ -208,7 +208,7 @@ const EarningsView: React.FC<EarningsViewProps> = ({ appointments, onBack, theme
                   ${chartTotalEarnings}
                 </p>
               </div>
-              <DollarSign className="w-6 h-6 sm:w-8 sm:h-8 text-green-500 mx-auto sm:mx-0 mt-1 sm:mt-0" />
+              <DollarSign className="hidden sm:block w-8 h-8 text-green-500" />
             </div>
           </div>
 
@@ -216,7 +216,7 @@ const EarningsView: React.FC<EarningsViewProps> = ({ appointments, onBack, theme
             theme === 'dark' ? 'bg-gray-700' : 'bg-blue-50'
           }`}>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-              <div className="text-center sm:text-left">
+              <div className="text-center sm:text-left w-full sm:w-auto">
                 <p className={`text-xs sm:text-sm font-medium ${
                   theme === 'dark' ? 'text-gray-300' : 'text-blue-600'
                 }`}>
@@ -226,7 +226,7 @@ const EarningsView: React.FC<EarningsViewProps> = ({ appointments, onBack, theme
                   {totalAppointments}
                 </p>
               </div>
-              <Calendar className="w-6 h-6 sm:w-8 sm:h-8 text-blue-500 mx-auto sm:mx-0 mt-1 sm:mt-0" />
+              <Calendar className="hidden sm:block w-8 h-8 text-blue-500" />
             </div>
           </div>
 
@@ -234,7 +234,7 @@ const EarningsView: React.FC<EarningsViewProps> = ({ appointments, onBack, theme
             theme === 'dark' ? 'bg-gray-700' : 'bg-orange-50'
           }`}>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-              <div className="text-center sm:text-left">
+              <div className="text-center sm:text-left w-full sm:w-auto">
                 <p className={`text-xs sm:text-sm font-medium ${
                   theme === 'dark' ? 'text-gray-300' : 'text-orange-600'
                 }`}>
@@ -244,7 +244,7 @@ const EarningsView: React.FC<EarningsViewProps> = ({ appointments, onBack, theme
                   ${averagePerAppointment.toFixed(2)}
                 </p>
               </div>
-              <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8 text-orange-500 mx-auto sm:mx-0 mt-1 sm:mt-0" />
+              <TrendingUp className="hidden sm:block w-8 h-8 text-orange-500" />
             </div>
           </div>
         </div>
