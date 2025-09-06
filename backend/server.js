@@ -96,8 +96,8 @@ const sendAppointmentEmailSMS = async (appointmentData) => {
     const { clientName, date, time, duration, price } = appointmentData;
     
     // Use barber phone number and carrier from environment variables
-    const barberPhoneNumber = process.env.BARBER_PHONE_NUMBER || '8327080194';
-    const barberCarrier = process.env.BARBER_CARRIER || 'verizon';
+    const barberPhoneNumber = process.env.BARBER_PHONE_NUMBER || '8326807628';
+    const barberCarrier = process.env.BARBER_CARRIER || 'tmobile';
     
     const formattedDate = formatDate(date);
     const formattedTime = formatTime(time);
