@@ -61,7 +61,7 @@ const clientService = {
       const { data, error } = await supabase
         .from('clients')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('createdAt', { ascending: false });
 
       if (error) throw error;
       return { success: true, clients: data };
