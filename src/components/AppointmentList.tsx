@@ -368,33 +368,33 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                                   </div>
                                 </div>
                                 
-                                {/* Action Buttons - Stack vertically on mobile */}
-                                <div className="flex flex-col sm:flex-row items-end sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
+                                {/* Action Buttons - Horizontal with better mobile sizing */}
+                                <div className="flex items-center space-x-2 flex-wrap">
                                   {appointment.status === 'pending' && (
                                     <button
                                       onClick={() => handleDoneClick(appointment.id)}
-                                      className="px-2 py-1 sm:px-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full text-xs sm:text-sm font-medium hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-sm w-full sm:w-auto"
+                                      className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full text-sm font-medium hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-sm"
                                     >
                                       Done
                                     </button>
                                   )}
                                   <button
                                     onClick={() => onEdit(appointment.id)}
-                                    className="px-2 py-1 sm:px-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full text-xs sm:text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm w-full sm:w-auto"
+                                    className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm"
                                   >
                                     Edit
                                   </button>
                                   <button
                                     onClick={() => handleDelete(appointment.id)}
                                     disabled={deletingAppointments.has(appointment.id)}
-                                    className={`px-2 py-1 sm:px-3 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 shadow-sm w-full sm:w-auto ${
+                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 shadow-sm ${
                                       deletingAppointments.has(appointment.id)
                                         ? 'bg-gray-400 cursor-not-allowed'
                                         : 'bg-gradient-to-r from-red-500 to-pink-600 text-white hover:from-red-600 hover:to-pink-700'
                                     }`}
                                   >
                                     {deletingAppointments.has(appointment.id) ? (
-                                      <div className="flex items-center justify-center space-x-1">
+                                      <div className="flex items-center space-x-1">
                                         <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                                         <span>Deleting...</span>
                                       </div>
@@ -476,25 +476,25 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                                   </div>
                                 </div>
                                 
-                                {/* Action Buttons - Stack vertically on mobile */}
-                                <div className="flex flex-col sm:flex-row items-end sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
+                                {/* Action Buttons - Horizontal with better mobile sizing */}
+                                <div className="flex items-center space-x-2 flex-wrap">
                                   <button
                                     onClick={() => onEdit(appointment.id)}
-                                    className="px-2 py-1 sm:px-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full text-xs sm:text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm w-full sm:w-auto"
+                                    className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm"
                                   >
                                     Edit
                                   </button>
                                   <button
                                     onClick={() => handleDelete(appointment.id)}
                                     disabled={deletingAppointments.has(appointment.id)}
-                                    className={`px-2 py-1 sm:px-3 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 shadow-sm w-full sm:w-auto ${
+                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 shadow-sm ${
                                       deletingAppointments.has(appointment.id)
                                         ? 'bg-gray-400 cursor-not-allowed'
                                         : 'bg-gradient-to-r from-red-500 to-pink-600 text-white hover:from-red-600 hover:to-pink-700'
                                     }`}
                                   >
                                     {deletingAppointments.has(appointment.id) ? (
-                                      <div className="flex items-center justify-center space-x-1">
+                                      <div className="flex items-center space-x-1">
                                         <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                                         <span>Deleting...</span>
                                       </div>
@@ -568,33 +568,33 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                         </div>
                       </div>
                       
-                      {/* Action Buttons - Stack vertically on mobile */}
-                      <div className="flex flex-col sm:flex-row items-end sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
+                      {/* Action Buttons - Horizontal with better mobile sizing */}
+                      <div className="flex items-center space-x-2 flex-wrap">
                         {appointment.status === 'pending' && (
                           <button
                             onClick={() => handleDoneClick(appointment.id)}
-                            className="px-2 py-1 sm:px-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full text-xs sm:text-sm font-medium hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-sm w-full sm:w-auto"
+                            className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full text-sm font-medium hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-sm"
                           >
                             Done
                           </button>
                         )}
                         <button
                           onClick={() => onEdit(appointment.id)}
-                          className="px-2 py-1 sm:px-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full text-xs sm:text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm w-full sm:w-auto"
+                          className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm"
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => handleDelete(appointment.id)}
                           disabled={deletingAppointments.has(appointment.id)}
-                          className={`px-2 py-1 sm:px-3 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 shadow-sm w-full sm:w-auto ${
+                          className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 shadow-sm ${
                             deletingAppointments.has(appointment.id)
                               ? 'bg-gray-400 cursor-not-allowed'
                               : 'bg-gradient-to-r from-red-500 to-pink-600 text-white hover:from-red-600 hover:to-pink-700'
                           }`}
                         >
                           {deletingAppointments.has(appointment.id) ? (
-                            <div className="flex items-center justify-center space-x-1">
+                            <div className="flex items-center space-x-1">
                               <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                               <span>Deleting...</span>
                             </div>
