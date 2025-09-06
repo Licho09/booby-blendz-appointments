@@ -274,37 +274,39 @@ function App() {
       <div className={`fixed bottom-0 left-0 right-0 ${
         theme === 'dark' ? 'bg-gray-800' : 'bg-white'
       } border-t ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'} p-4`}>
-        <div className="flex justify-around items-center max-w-md mx-auto">
-          <button
-            onClick={() => handleViewChange('appointments')}
-            className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors ${
-              currentView === 'appointments'
-                ? 'text-blue-500'
-                : theme === 'dark' ? 'text-gray-400 hover:text-gray-300' : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            <Clock className="w-6 h-6" />
-            <span className="text-xs font-medium">Appointments</span>
-          </button>
-          
-          <button
-            onClick={() => setShowAppointmentForm(true)}
-            className="w-16 h-16 bg-gradient-to-br from-teal-400 to-blue-500 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
-          >
-            <Plus className="w-8 h-8 text-white stroke-4" />
-          </button>
-          
-          <button
-            onClick={() => handleViewChange('earnings')}
-            className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors ${
-              currentView === 'earnings'
-                ? 'text-blue-500'
-                : theme === 'dark' ? 'text-gray-400 hover:text-gray-300' : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            <DollarSign className="w-6 h-6" />
-            <span className="text-xs font-medium">Earnings</span>
-          </button>
+        <div className="flex justify-center items-center max-w-md mx-auto">
+          <div className="flex items-center justify-between w-full px-4">
+            <button
+              onClick={() => handleViewChange('appointments')}
+              className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors flex-1 ${
+                currentView === 'appointments'
+                  ? 'text-blue-500'
+                  : theme === 'dark' ? 'text-gray-400 hover:text-gray-300' : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <Clock className="w-6 h-6" />
+              <span className="text-xs font-medium">Appointments</span>
+            </button>
+            
+            <button
+              onClick={() => setShowAppointmentForm(true)}
+              className="w-16 h-16 bg-gradient-to-br from-teal-400 to-blue-500 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 mx-4"
+            >
+              <Plus className="w-8 h-8 text-white stroke-4" />
+            </button>
+            
+            <button
+              onClick={() => handleViewChange('earnings')}
+              className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors flex-1 ${
+                currentView === 'earnings'
+                  ? 'text-blue-500'
+                  : theme === 'dark' ? 'text-gray-400 hover:text-gray-300' : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <DollarSign className="w-6 h-6" />
+              <span className="text-xs font-medium">Earnings</span>
+            </button>
+          </div>
         </div>
       </div>
 
