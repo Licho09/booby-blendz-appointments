@@ -182,7 +182,10 @@ const EarningsView: React.FC<EarningsViewProps> = ({ appointments, theme }) => {
   };
 
   const handleNext = () => {
-    setCurrentOffset(prev => prev + 1);
+    // Only allow going forward if we're in the past (negative offset)
+    if (currentOffset < 0) {
+      setCurrentOffset(prev => prev + 1);
+    }
   };
 
   const handleTimeFilterChange = (newFilter: TimeFilter) => {
@@ -374,10 +377,15 @@ const EarningsView: React.FC<EarningsViewProps> = ({ appointments, theme }) => {
             
             <button
               onClick={handleNext}
+              disabled={currentOffset >= 0}
               className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-                theme === 'dark'
-                  ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                currentOffset >= 0
+                  ? theme === 'dark'
+                    ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                    : 'bg-gray-50 text-gray-400 cursor-not-allowed'
+                  : theme === 'dark'
+                    ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
               <span className="hidden sm:inline">Next</span>

@@ -152,7 +152,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
               onChange={handleChange}
               placeholder="Enter client name"
               required
-              className={`w-full px-3 py-2 rounded-lg border transition-colors box-border ${
+              className={`w-full px-3 py-2 rounded-lg border transition-colors ${
                 theme === 'dark' 
                   ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500' 
                   : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'
@@ -177,12 +177,11 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                 value={formData.date}
                 onChange={handleChange}
                 required
-                className={`w-full px-3 py-2 rounded-lg border transition-colors box-border ${
+                className={`w-full px-3 py-2 rounded-lg border transition-colors ${
                   theme === 'dark' 
                     ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500' 
                     : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'
                 } focus:outline-none focus:ring-2 focus:ring-blue-200`}
-                style={{ maxWidth: '100%' }}
               />
             </div>
 
@@ -290,7 +289,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className={`w-full px-3 py-2 rounded-lg border transition-colors box-border ${
+              className={`w-full px-3 py-2 rounded-lg border transition-colors ${
                 theme === 'dark' 
                   ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500' 
                   : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'
