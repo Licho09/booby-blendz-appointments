@@ -675,19 +675,19 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                         </span>
                       </div>
                       
-                      {/* Mobile: Compact info stack */}
-                      <div className="flex sm:hidden flex-col space-y-1 text-sm text-gray-500">
-                        <div className="flex items-center space-x-1">
-                          <Calendar className="w-4 h-4" />
-                          <span>{formatDisplayDate(appointment.date)}</span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <span className="font-semibold text-green-600">${(appointment.price || 0).toFixed(2)}</span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <span className="text-gray-500">{appointment.duration} min</span>
-                        </div>
-                      </div>
+                                {/* Mobile: Compact info stack */}
+                                <div className="flex sm:hidden flex-col space-y-1 text-base text-gray-500">
+                                  <div className="flex items-center space-x-1">
+                                    <Calendar className="w-4 h-4" />
+                                    <span>{formatDisplayDate(appointment.date)}</span>
+                                  </div>
+                                  <div className="flex items-center space-x-1">
+                                    <span className="font-semibold text-green-600">${(appointment.price || 0).toFixed(2)}</span>
+                                  </div>
+                                  <div className="flex items-center space-x-1">
+                                    <span className="text-gray-500">{appointment.duration} min</span>
+                                  </div>
+                                </div>
 
                       {/* Desktop: Horizontal info */}
                       <div className="hidden sm:flex sm:items-center sm:space-x-4 text-sm text-gray-500">
