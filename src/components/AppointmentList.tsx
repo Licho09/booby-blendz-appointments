@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Edit3, Trash2, Search, User, Clock, Calendar, X } from 'lucide-react';
+import { Search, User, Calendar, X } from 'lucide-react';
 import type { Appointment, Client } from '../types';
 
 interface AppointmentListProps {
@@ -9,7 +9,9 @@ interface AppointmentListProps {
   onDelete: (appointmentId: string) => void;
   onMarkComplete: (appointmentId: string, price?: number) => void;
   theme: 'light' | 'dark';
-  clientsLoading?: boolean;
+  isLoading?: boolean;
+  error?: string | null;
+  onRetry?: () => void;
 }
 
 const AppointmentList: React.FC<AppointmentListProps> = ({ 
@@ -18,8 +20,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
   onEdit, 
   onDelete, 
   onMarkComplete,
-  theme,
-  clientsLoading = false
+  theme 
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState<'all' | 'today' | 'upcoming' | 'pending' | 'completed'>('today');
@@ -27,8 +28,6 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
   const [showPriceModal, setShowPriceModal] = useState(false);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<string>('');
   const [priceInput, setPriceInput] = useState('');
-  const [showDateRange, setShowDateRange] = useState(false);
-  const [dateRange, setDateRange] = useState({ start: '', end: '' });
   const [deletingAppointments, setDeletingAppointments] = useState<Set<string>>(new Set());
 
   const formatTime = (timeString: string) => {
@@ -54,11 +53,6 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
   };
 
   const getClientName = (clientId: string) => {
-    // If clients are still loading, show a loading state
-    if (clientsLoading) {
-      return 'Loading...';
-    }
-    
     const client = clients.find(c => c.id === clientId);
     return client?.name || 'Unknown Client';
   };
@@ -330,8 +324,8 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                                 : 'bg-gradient-to-br from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100'
                             } shadow-lg border ${theme === 'dark' ? 'border-gray-700' : 'border-blue-200'}`}
                           >
-                            <div className="flex flex-col sm:flex-row items-start justify-between space-y-3 sm:space-y-0">
-                              <div className="flex-1 space-y-2 w-full sm:w-auto">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1 space-y-2">
                                 <div className="flex items-center space-x-3">
                                   <div className="flex items-center space-x-2">
                                     <User className="w-6 h-6 text-gray-400" />
@@ -361,40 +355,39 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                                 )}
                               </div>
                               
-                              {/* Mobile-first responsive layout */}
-                              <div className="flex flex-col items-end space-y-3 ml-0 sm:ml-4 w-full sm:w-auto">
+                              <div className="flex flex-col items-end space-y-3 ml-4">
                                 {/* Time Display */}
                                 <div className="text-right">
-                                  <div className={`text-2xl sm:text-4xl font-bold ${
+                                  <div className={`text-4xl font-bold ${
                                     theme === 'dark' ? 'text-white' : 'text-blue-600'
                                   }`}>
                                     {formatTime(appointment.time)}
                                   </div>
-                                  <div className="text-xs sm:text-sm text-gray-500">
+                                  <div className="text-sm text-gray-500">
                                     {appointment.duration} min
                                   </div>
                                 </div>
                                 
-                                {/* Action Buttons - Horizontal with better mobile sizing */}
-                                <div className="flex items-center space-x-2 flex-wrap">
+                                {/* Action Buttons */}
+                                <div className="flex items-center space-x-2">
                                   {appointment.status === 'pending' && (
                                     <button
                                       onClick={() => handleDoneClick(appointment.id)}
-                                      className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full text-sm font-medium hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-sm"
+                                      className="px-3 py-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full text-sm font-medium hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-sm"
                                     >
                                       Done
                                     </button>
                                   )}
                                   <button
                                     onClick={() => onEdit(appointment.id)}
-                                    className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm"
+                                    className="px-3 py-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm"
                                   >
                                     Edit
                                   </button>
                                   <button
                                     onClick={() => handleDelete(appointment.id)}
                                     disabled={deletingAppointments.has(appointment.id)}
-                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 shadow-sm ${
+                                    className={`px-3 py-1 rounded-full text-sm font-medium transition-all duration-200 shadow-sm ${
                                       deletingAppointments.has(appointment.id)
                                         ? 'bg-gray-400 cursor-not-allowed'
                                         : 'bg-gradient-to-r from-red-500 to-pink-600 text-white hover:from-red-600 hover:to-pink-700'
@@ -438,8 +431,8 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                                 : 'bg-gradient-to-br from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100'
                             } shadow-lg border ${theme === 'dark' ? 'border-gray-700' : 'border-green-200'}`}
                           >
-                            <div className="flex flex-col sm:flex-row items-start justify-between space-y-3 sm:space-y-0">
-                              <div className="flex-1 space-y-2 w-full sm:w-auto">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1 space-y-2">
                                 <div className="flex items-center space-x-3">
                                   <div className="flex items-center space-x-2">
                                     <User className="w-6 h-6 text-gray-400" />
@@ -469,32 +462,31 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                                 )}
                               </div>
                               
-                              {/* Mobile-first responsive layout */}
-                              <div className="flex flex-col items-end space-y-3 ml-0 sm:ml-4 w-full sm:w-auto">
+                              <div className="flex flex-col items-end space-y-3 ml-4">
                                 {/* Time Display */}
                                 <div className="text-right">
-                                  <div className={`text-2xl sm:text-4xl font-bold ${
+                                  <div className={`text-4xl font-bold ${
                                     theme === 'dark' ? 'text-white' : 'text-green-600'
                                   }`}>
                                     {formatTime(appointment.time)}
                                   </div>
-                                  <div className="text-xs sm:text-sm text-gray-500">
+                                  <div className="text-sm text-gray-500">
                                     {appointment.duration} min
                                   </div>
                                 </div>
                                 
-                                {/* Action Buttons - Horizontal with better mobile sizing */}
-                                <div className="flex items-center space-x-2 flex-wrap">
+                                {/* Action Buttons */}
+                                <div className="flex items-center space-x-2">
                                   <button
                                     onClick={() => onEdit(appointment.id)}
-                                    className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm"
+                                    className="px-3 py-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm"
                                   >
                                     Edit
                                   </button>
                                   <button
                                     onClick={() => handleDelete(appointment.id)}
                                     disabled={deletingAppointments.has(appointment.id)}
-                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 shadow-sm ${
+                                    className={`px-3 py-1 rounded-full text-sm font-medium transition-all duration-200 shadow-sm ${
                                       deletingAppointments.has(appointment.id)
                                         ? 'bg-gray-400 cursor-not-allowed'
                                         : 'bg-gradient-to-r from-red-500 to-pink-600 text-white hover:from-red-600 hover:to-pink-700'
@@ -530,8 +522,8 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                       : 'bg-gradient-to-br from-slate-50 to-gray-50 hover:from-slate-100 hover:to-gray-100'
                   } shadow-lg border ${theme === 'dark' ? 'border-gray-700' : 'border-slate-200'}`}
                 >
-                  <div className="flex flex-col sm:flex-row items-start justify-between space-y-3 sm:space-y-0">
-                    <div className="flex-1 space-y-2 w-full sm:w-auto">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 space-y-2">
                       <div className="flex items-center space-x-3">
                         <div className="flex items-center space-x-2">
                           <User className="w-6 h-6 text-gray-400" />
@@ -561,40 +553,39 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                       )}
                     </div>
                     
-                    {/* Mobile-first responsive layout */}
-                    <div className="flex flex-col items-end space-y-3 ml-0 sm:ml-4 w-full sm:w-auto">
+                    <div className="flex flex-col items-end space-y-3 ml-4">
                       {/* Time Display */}
                       <div className="text-right">
-                        <div className={`text-2xl sm:text-4xl font-bold ${
+                        <div className={`text-4xl font-bold ${
                           theme === 'dark' ? 'text-white' : 'text-slate-600'
                         }`}>
                           {formatTime(appointment.time)}
                         </div>
-                        <div className="text-xs sm:text-sm text-gray-500">
+                        <div className="text-sm text-gray-500">
                           {appointment.duration} min
                         </div>
                       </div>
                       
-                      {/* Action Buttons - Horizontal with better mobile sizing */}
-                      <div className="flex items-center space-x-2 flex-wrap">
+                      {/* Action Buttons */}
+                      <div className="flex items-center space-x-2">
                         {appointment.status === 'pending' && (
                           <button
                             onClick={() => handleDoneClick(appointment.id)}
-                            className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full text-sm font-medium hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-sm"
+                            className="px-3 py-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full text-sm font-medium hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-sm"
                           >
                             Done
                           </button>
                         )}
                         <button
                           onClick={() => onEdit(appointment.id)}
-                          className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm"
+                          className="px-3 py-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm"
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => handleDelete(appointment.id)}
                           disabled={deletingAppointments.has(appointment.id)}
-                          className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 shadow-sm ${
+                          className={`px-3 py-1 rounded-full text-sm font-medium transition-all duration-200 shadow-sm ${
                             deletingAppointments.has(appointment.id)
                               ? 'bg-gray-400 cursor-not-allowed'
                               : 'bg-gradient-to-r from-red-500 to-pink-600 text-white hover:from-red-600 hover:to-pink-700'
@@ -621,7 +612,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
 
       {/* Price Input Modal */}
       {showPriceModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-hidden">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className={`w-full max-w-md rounded-xl shadow-xl ${
             theme === 'dark' ? 'bg-gray-800' : 'bg-white'
           } overflow-hidden`}>
@@ -654,8 +645,6 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                   </div>
                   <input
                     type="number"
-                    inputMode="decimal"
-                    pattern="[0-9]*"
                     value={priceInput}
                     onChange={(e) => setPriceInput(e.target.value)}
                     placeholder="0.00"
@@ -668,6 +657,9 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                     } focus:outline-none focus:ring-2 focus:ring-blue-200`}
                     autoFocus
                   />
+                </div>
+                <div className="text-center text-sm text-gray-500">
+                  Enter the amount in dollars (e.g., 25.00)
                 </div>
               </div>
 
@@ -688,7 +680,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                   disabled={!priceInput || parseFloat(priceInput) < 0}
                   className="flex-1 px-4 py-3 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Save
+                  Complete & Save
                 </button>
               </div>
             </div>

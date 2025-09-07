@@ -36,3 +36,5 @@ public/
 4. Deploy your app
 
 The app is already configured to use these icons!
+
+

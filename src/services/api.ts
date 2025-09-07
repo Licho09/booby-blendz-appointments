@@ -5,10 +5,11 @@ const getAuthToken = (): string | null => {
   return localStorage.getItem('authToken');
 };
 
-// Helper function to make API requests
+// Helper function to make API requests with timeout and retry
 const apiRequest = async (
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  retries: number = 2
 ): Promise<any> => {
   const token = getAuthToken();
   
@@ -21,8 +22,17 @@ const apiRequest = async (
     ...options,
   };
 
+  // Create abort controller for timeout
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      ...config,
+      signal: controller.signal,
+    });
+    
+    clearTimeout(timeoutId);
     const data = await response.json();
 
     if (!response.ok) {
@@ -31,6 +41,15 @@ const apiRequest = async (
 
     return data;
   } catch (error) {
+    clearTimeout(timeoutId);
+    
+    // Retry logic for network errors
+    if (retries > 0 && (error instanceof Error && (error.name === 'AbortError' || error.message.includes('fetch')))) {
+      console.log(`Retrying API request (${endpoint}), attempts left: ${retries}`);
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
+      return apiRequest(endpoint, options, retries - 1);
+    }
+    
     console.error(`API Error (${endpoint}):`, error);
     throw error;
   }
@@ -88,7 +107,7 @@ export const clientsAPI = {
     return response.clients || [];
   },
 
-  create: async (clientData: Omit<Client, 'id' | 'createdAt'>) => {
+  create: async (clientData: any) => {
     const response = await apiRequest('/clients', {
       method: 'POST',
       body: JSON.stringify(clientData),
@@ -96,7 +115,7 @@ export const clientsAPI = {
     return response.client;
   },
 
-  update: async (id: string, clientData: Partial<Client>) => {
+  update: async (id: string, clientData: any) => {
     const response = await apiRequest(`/clients/${id}`, {
       method: 'PUT',
       body: JSON.stringify(clientData),
@@ -119,7 +138,7 @@ export const appointmentsAPI = {
     return response.appointments || [];
   },
 
-  create: async (appointmentData: Omit<Appointment, 'id' | 'createdAt'>) => {
+  create: async (appointmentData: any) => {
     const response = await apiRequest('/appointments', {
       method: 'POST',
       body: JSON.stringify(appointmentData),
@@ -127,7 +146,7 @@ export const appointmentsAPI = {
     return response.appointment;
   },
 
-  update: async (id: string, appointmentData: Partial<Appointment>) => {
+  update: async (id: string, appointmentData: any) => {
     const response = await apiRequest(`/appointments/${id}`, {
       method: 'PUT',
       body: JSON.stringify(appointmentData),

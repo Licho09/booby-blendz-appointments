@@ -1,12 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, DollarSign, Plus, Moon, Sun, Search, Edit3, Instagram, Scissors, LogOut } from 'lucide-react';
-import Dashboard from './components/Dashboard';
+import { useState } from 'react';
+import { Clock, DollarSign, Plus, Moon, Sun, Instagram, LogOut } from 'lucide-react';
 import AppointmentList from './components/AppointmentList';
-import ClientList from './components/ClientList';
 import AppointmentForm from './components/AppointmentForm';
 import ClientForm from './components/ClientForm';
 import EarningsView from './components/EarningsView';
-import BarberPoleIcon from './components/BarberPoleIcon';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import { useAppointments } from './hooks/useAppointments';
@@ -24,10 +21,10 @@ function App() {
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null);
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
 
-  const { appointments, addAppointment, updateAppointment, deleteAppointment } = useAppointments();
-  const { clients, addClient, updateClient, deleteClient, isLoading: clientsLoading } = useClients();
+  const { appointments, addAppointment, updateAppointment, deleteAppointment, isLoading: appointmentsLoading, error: appointmentsError, refreshAppointments } = useAppointments();
+  const { clients, addClient, updateClient } = useClients();
   const { theme, toggleTheme } = useTheme();
-  const { user, isAuthenticated, isLoading, login, signup, logout } = useAuth();
+  const { isAuthenticated, isLoading, login, signup, logout } = useAuth();
 
   // Test message to see if app is loading
   console.log('App is loading! Current view:', currentView);
@@ -44,10 +41,6 @@ function App() {
     setShowAppointmentForm(true);
   };
 
-  const handleEditClient = (clientId: string) => {
-    setSelectedClientId(clientId);
-    setShowClientForm(true);
-  };
 
   const handleAppointmentSubmit = async (appointmentData: any) => {
     try {
@@ -235,7 +228,6 @@ function App() {
             clients={clients}
             onEdit={handleEditAppointment}
             onDelete={deleteAppointment}
-            clientsLoading={clientsLoading}
             onMarkComplete={async (appointmentId, price) => {
               try {
                 const appointment = appointments.find(apt => apt.id === appointmentId);
@@ -258,6 +250,9 @@ function App() {
               }
             }}
             theme={theme}
+            isLoading={appointmentsLoading}
+            error={appointmentsError}
+            onRetry={refreshAppointments}
           />
         )}
         
