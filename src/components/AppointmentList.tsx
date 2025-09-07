@@ -329,9 +329,9 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                                 <div className="flex sm:hidden items-center justify-between">
                                   <div className="flex items-center space-x-2">
                                     <User className="w-5 h-5 text-gray-400" />
-                                    <span className="text-lg font-semibold">{getClientName(appointment.clientId)}</span>
+                                    <span className="text-xl font-semibold">{getClientName(appointment.clientId)}</span>
                                   </div>
-                                  <div className={`text-xl font-bold ${
+                                  <div className={`text-2xl font-bold ${
                                     theme === 'dark' ? 'text-white' : 'text-blue-600'
                                   }`}>
                                     {formatTime(appointment.time)}
@@ -504,9 +504,9 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                                 <div className="flex sm:hidden items-center justify-between">
                                   <div className="flex items-center space-x-2">
                                     <User className="w-5 h-5 text-gray-400" />
-                                    <span className="text-lg font-semibold">{getClientName(appointment.clientId)}</span>
+                                    <span className="text-xl font-semibold">{getClientName(appointment.clientId)}</span>
                                   </div>
-                                  <div className={`text-xl font-bold ${
+                                  <div className={`text-2xl font-bold ${
                                     theme === 'dark' ? 'text-white' : 'text-green-600'
                                   }`}>
                                     {formatTime(appointment.time)}
@@ -655,9 +655,9 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                       <div className="flex sm:hidden items-center justify-between">
                         <div className="flex items-center space-x-2">
                           <User className="w-5 h-5 text-gray-400" />
-                          <span className="text-lg font-semibold">{getClientName(appointment.clientId)}</span>
+                          <span className="text-xl font-semibold">{getClientName(appointment.clientId)}</span>
                         </div>
-                        <div className={`text-xl font-bold ${
+                        <div className={`text-2xl font-bold ${
                           theme === 'dark' ? 'text-white' : 'text-slate-600'
                         }`}>
                           {formatTime(appointment.time)}
