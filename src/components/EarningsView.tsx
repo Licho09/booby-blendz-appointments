@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { DollarSign, TrendingUp, Calendar, BarChart3, ArrowLeft } from 'lucide-react';
+import { DollarSign, TrendingUp, Calendar, BarChart3, ChevronLeft, ChevronRight } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import type { Appointment, TimeFilter } from '../types';
 
@@ -9,40 +9,51 @@ interface EarningsViewProps {
   theme: 'light' | 'dark';
 }
 
-const EarningsView: React.FC<EarningsViewProps> = ({ appointments, onBack, theme }) => {
+const EarningsView: React.FC<EarningsViewProps> = ({ appointments, theme }) => {
   const [timeFilter, setTimeFilter] = useState<TimeFilter>('week');
+  const [currentOffset, setCurrentOffset] = useState(0); // 0 = current, -1 = previous, 1 = next
 
   const chartData = useMemo(() => {
     const completedAppointments = appointments.filter(apt => apt.status === 'completed');
     const now = new Date();
-    const today = now.toDateString();
     
-    // Filter appointments based on time filter
+    // Filter appointments based on time filter and current offset
     let filteredAppointments = completedAppointments;
     
     switch (timeFilter) {
       case 'today':
-        // Use UTC date comparison to avoid timezone issues
-        const todayUTC = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+        // Navigate by days
+        const targetDate = new Date(now);
+        targetDate.setDate(now.getDate() + currentOffset);
+        const targetDateUTC = new Date(targetDate.getUTCFullYear(), targetDate.getUTCMonth(), targetDate.getUTCDate());
         filteredAppointments = completedAppointments.filter(apt => {
           const aptDate = new Date(apt.date);
           const aptDateUTC = new Date(aptDate.getUTCFullYear(), aptDate.getUTCMonth(), aptDate.getUTCDate());
-          return aptDateUTC.getTime() === todayUTC.getTime();
+          return aptDateUTC.getTime() === targetDateUTC.getTime();
         });
         break;
       case 'week':
+        // Navigate by weeks
         const weekStart = new Date(now);
-        weekStart.setDate(now.getDate() - now.getDay());
+        weekStart.setDate(now.getDate() - now.getDay() + (currentOffset * 7));
         weekStart.setHours(0, 0, 0, 0);
-        filteredAppointments = completedAppointments.filter(apt => 
-          new Date(apt.date) >= weekStart
-        );
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 6);
+        weekEnd.setHours(23, 59, 59, 999);
+        filteredAppointments = completedAppointments.filter(apt => {
+          const aptDate = new Date(apt.date);
+          return aptDate >= weekStart && aptDate <= weekEnd;
+        });
         break;
       case 'month':
-        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-        filteredAppointments = completedAppointments.filter(apt => 
-          new Date(apt.date) >= monthStart
-        );
+        // Navigate by months
+        const monthStart = new Date(now.getFullYear(), now.getMonth() + currentOffset, 1);
+        const monthEnd = new Date(now.getFullYear(), now.getMonth() + currentOffset + 1, 0);
+        monthEnd.setHours(23, 59, 59, 999);
+        filteredAppointments = completedAppointments.filter(apt => {
+          const aptDate = new Date(apt.date);
+          return aptDate >= monthStart && aptDate <= monthEnd;
+        });
         break;
       case 'all':
         // Use all completed appointments
@@ -59,9 +70,10 @@ const EarningsView: React.FC<EarningsViewProps> = ({ appointments, onBack, theme
       });
     }
 
-    // Initialize all days of the current month for month view
+    // Initialize all days of the target month for month view
     if (timeFilter === 'month') {
-      const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+      const targetMonth = new Date(now.getFullYear(), now.getMonth() + currentOffset, 1);
+      const daysInMonth = new Date(targetMonth.getFullYear(), targetMonth.getMonth() + 1, 0).getDate();
       for (let day = 1; day <= daysInMonth; day++) {
         dataMap.set(day.toString(), { name: day.toString(), earnings: 0, appointments: 0 });
       }
@@ -116,7 +128,7 @@ const EarningsView: React.FC<EarningsViewProps> = ({ appointments, onBack, theme
       }
       return a.name.localeCompare(b.name);
     });
-  }, [appointments, timeFilter]);
+  }, [appointments, timeFilter, currentOffset]);
 
   // Calculate total earnings from chart data (sum of all bars)
   const chartTotalEarnings = useMemo(() => {
@@ -164,6 +176,65 @@ const EarningsView: React.FC<EarningsViewProps> = ({ appointments, onBack, theme
     { key: 'all' as TimeFilter, label: 'All Time' }
   ];
 
+  // Navigation functions
+  const handlePrevious = () => {
+    setCurrentOffset(prev => prev - 1);
+  };
+
+  const handleNext = () => {
+    setCurrentOffset(prev => prev + 1);
+  };
+
+  const handleTimeFilterChange = (newFilter: TimeFilter) => {
+    setTimeFilter(newFilter);
+    setCurrentOffset(0); // Reset to current period when changing filter
+  };
+
+  // Get current period label
+  const getCurrentPeriodLabel = () => {
+    const now = new Date();
+    
+    switch (timeFilter) {
+      case 'today':
+        const targetDate = new Date(now);
+        targetDate.setDate(now.getDate() + currentOffset);
+        if (currentOffset === 0) return 'Today';
+        if (currentOffset === -1) return 'Yesterday';
+        if (currentOffset === 1) return 'Tomorrow';
+        return targetDate.toLocaleDateString('en-US', { 
+          weekday: 'long', 
+          month: 'short', 
+          day: 'numeric' 
+        });
+      
+      case 'week':
+        const weekStart = new Date(now);
+        weekStart.setDate(now.getDate() - now.getDay() + (currentOffset * 7));
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 6);
+        
+        if (currentOffset === 0) return 'This Week';
+        if (currentOffset === -1) return 'Last Week';
+        if (currentOffset === 1) return 'Next Week';
+        
+        return `${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+      
+      case 'month':
+        const targetMonth = new Date(now.getFullYear(), now.getMonth() + currentOffset, 1);
+        if (currentOffset === 0) return 'This Month';
+        if (currentOffset === -1) return 'Last Month';
+        if (currentOffset === 1) return 'Next Month';
+        
+        return targetMonth.toLocaleDateString('en-US', { 
+          month: 'long', 
+          year: 'numeric' 
+        });
+      
+      default:
+        return 'All Time';
+    }
+  };
+
   return (
     <div className="min-h-screen pb-20">
       <div className="p-4 space-y-6">
@@ -178,7 +249,7 @@ const EarningsView: React.FC<EarningsViewProps> = ({ appointments, onBack, theme
           {timeFilters.map((filter) => (
             <button
               key={filter.key}
-              onClick={() => setTimeFilter(filter.key)}
+              onClick={() => handleTimeFilterChange(filter.key)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${
                 timeFilter === filter.key
                   ? 'bg-blue-500 text-white'
@@ -254,7 +325,7 @@ const EarningsView: React.FC<EarningsViewProps> = ({ appointments, onBack, theme
           {timeFilters.map((filter) => (
             <button
               key={filter.key}
-              onClick={() => setTimeFilter(filter.key)}
+              onClick={() => handleTimeFilterChange(filter.key)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${
                 timeFilter === filter.key
                   ? 'bg-blue-500 text-white'
@@ -268,13 +339,60 @@ const EarningsView: React.FC<EarningsViewProps> = ({ appointments, onBack, theme
           ))}
         </div>
 
+        {/* Navigation Controls (only show for today, week, month) */}
+        {timeFilter !== 'all' && (
+          <div className="flex items-center justify-between mb-4">
+            <button
+              onClick={handlePrevious}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+                theme === 'dark'
+                  ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              <ChevronLeft className="w-4 h-4" />
+              <span className="hidden sm:inline">Previous</span>
+            </button>
+            
+            <div className="text-center">
+              <h3 className={`text-lg font-semibold ${
+                theme === 'dark' ? 'text-white' : 'text-gray-900'
+              }`}>
+                {getCurrentPeriodLabel()}
+              </h3>
+              {currentOffset !== 0 && (
+                <button
+                  onClick={() => setCurrentOffset(0)}
+                  className={`text-sm ${
+                    theme === 'dark' ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-500'
+                  }`}
+                >
+                  Back to Current
+                </button>
+              )}
+            </div>
+            
+            <button
+              onClick={handleNext}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+                theme === 'dark'
+                  ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              <span className="hidden sm:inline">Next</span>
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
         {/* Bar Chart */}
         <div className={`p-4 rounded-xl ${
           theme === 'dark' ? 'bg-gray-700' : 'bg-white border border-gray-200'
         }`}>
           <h3 className="text-lg font-semibold mb-4 flex items-center">
             <BarChart3 className="w-5 h-5 mr-2" />
-            Earnings by {timeFilter === 'today' ? 'Today' : timeFilter === 'week' ? 'Day' : timeFilter === 'month' ? 'Day' : 'Month'}
+            Earnings by {timeFilter === 'today' ? 'Day' : timeFilter === 'week' ? 'Day' : timeFilter === 'month' ? 'Day' : 'Month'}
           </h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
