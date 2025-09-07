@@ -328,10 +328,10 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                                 {/* Mobile: Name and time on same row */}
                                 <div className="flex sm:hidden items-center justify-between">
                                   <div className="flex items-center space-x-2">
-                                    <User className="w-5 h-5 text-gray-400" />
-                                    <span className="text-xl font-semibold">{getClientName(appointment.clientId)}</span>
+                                    <User className="w-6 h-6 text-gray-400" />
+                                    <span className="text-2xl font-semibold">{getClientName(appointment.clientId)}</span>
                                   </div>
-                                  <div className={`text-2xl font-bold ${
+                                  <div className={`text-3xl font-bold ${
                                     theme === 'dark' ? 'text-white' : 'text-blue-600'
                                   }`}>
                                     {formatTime(appointment.time)}
@@ -437,25 +437,25 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                               </div>
 
                               {/* Mobile: Buttons at bottom right */}
-                              <div className="flex sm:hidden items-center justify-end space-x-2 pt-2">
+                              <div className="flex sm:hidden items-center justify-end space-x-3 pt-2">
                                 {appointment.status === 'pending' && (
                                   <button
                                     onClick={() => handleDoneClick(appointment.id)}
-                                    className="px-3 py-1.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full text-xs font-medium hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-sm"
+                                    className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full text-sm font-medium hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-sm"
                                   >
                                     Done
                                   </button>
                                 )}
                                 <button
                                   onClick={() => onEdit(appointment.id)}
-                                  className="px-3 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full text-xs font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm"
+                                  className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm"
                                 >
                                   Edit
                                 </button>
                                 <button
                                   onClick={() => handleDelete(appointment.id)}
                                   disabled={deletingAppointments.has(appointment.id)}
-                                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 shadow-sm ${
+                                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 shadow-sm ${
                                     deletingAppointments.has(appointment.id)
                                       ? 'bg-gray-400 cursor-not-allowed'
                                       : 'bg-gradient-to-r from-red-500 to-pink-600 text-white hover:from-red-600 hover:to-pink-700'
@@ -503,10 +503,10 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                                 {/* Mobile: Name and time on same row */}
                                 <div className="flex sm:hidden items-center justify-between">
                                   <div className="flex items-center space-x-2">
-                                    <User className="w-5 h-5 text-gray-400" />
-                                    <span className="text-xl font-semibold">{getClientName(appointment.clientId)}</span>
+                                    <User className="w-6 h-6 text-gray-400" />
+                                    <span className="text-2xl font-semibold">{getClientName(appointment.clientId)}</span>
                                   </div>
-                                  <div className={`text-2xl font-bold ${
+                                  <div className={`text-3xl font-bold ${
                                     theme === 'dark' ? 'text-white' : 'text-green-600'
                                   }`}>
                                     {formatTime(appointment.time)}
@@ -604,17 +604,17 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                               </div>
 
                               {/* Mobile: Buttons at bottom right */}
-                              <div className="flex sm:hidden items-center justify-end space-x-2 pt-2">
+                              <div className="flex sm:hidden items-center justify-end space-x-3 pt-2">
                                 <button
                                   onClick={() => onEdit(appointment.id)}
-                                  className="px-3 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full text-xs font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm"
+                                  className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm"
                                 >
                                   Edit
                                 </button>
                                 <button
                                   onClick={() => handleDelete(appointment.id)}
                                   disabled={deletingAppointments.has(appointment.id)}
-                                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 shadow-sm ${
+                                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 shadow-sm ${
                                     deletingAppointments.has(appointment.id)
                                       ? 'bg-gray-400 cursor-not-allowed'
                                       : 'bg-gradient-to-r from-red-500 to-pink-600 text-white hover:from-red-600 hover:to-pink-700'
@@ -654,10 +654,10 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                       {/* Mobile: Name and time on same row */}
                       <div className="flex sm:hidden items-center justify-between">
                         <div className="flex items-center space-x-2">
-                          <User className="w-5 h-5 text-gray-400" />
-                          <span className="text-xl font-semibold">{getClientName(appointment.clientId)}</span>
+                          <User className="w-6 h-6 text-gray-400" />
+                          <span className="text-2xl font-semibold">{getClientName(appointment.clientId)}</span>
                         </div>
-                        <div className={`text-2xl font-bold ${
+                        <div className={`text-3xl font-bold ${
                           theme === 'dark' ? 'text-white' : 'text-slate-600'
                         }`}>
                           {formatTime(appointment.time)}
@@ -763,25 +763,25 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                     </div>
 
                     {/* Mobile: Buttons at bottom right */}
-                    <div className="flex sm:hidden items-center justify-end space-x-2 pt-2">
+                    <div className="flex sm:hidden items-center justify-end space-x-3 pt-2">
                       {appointment.status === 'pending' && (
                         <button
                           onClick={() => handleDoneClick(appointment.id)}
-                          className="px-3 py-1.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full text-xs font-medium hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-sm"
+                          className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full text-sm font-medium hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-sm"
                         >
                           Done
                         </button>
                       )}
                       <button
                         onClick={() => onEdit(appointment.id)}
-                        className="px-3 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full text-xs font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm"
+                        className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => handleDelete(appointment.id)}
                         disabled={deletingAppointments.has(appointment.id)}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 shadow-sm ${
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 shadow-sm ${
                           deletingAppointments.has(appointment.id)
                             ? 'bg-gray-400 cursor-not-allowed'
                             : 'bg-gradient-to-r from-red-500 to-pink-600 text-white hover:from-red-600 hover:to-pink-700'
