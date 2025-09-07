@@ -151,6 +151,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
               value={formData.clientName}
               onChange={handleChange}
               placeholder="Enter client name"
+              maxLength={14}
               required
               className={`w-full px-3 py-2 rounded-lg border transition-colors ${
                 theme === 'dark' 
@@ -158,6 +159,9 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                   : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'
               } focus:outline-none focus:ring-2 focus:ring-blue-200`}
             />
+            <div className="text-xs text-gray-500 text-right">
+              {formData.clientName.length}/14 characters
+            </div>
           </div>
 
 

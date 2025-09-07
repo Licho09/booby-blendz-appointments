@@ -350,7 +350,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                                 </div>
                                 
                                 {/* Mobile: Compact info stack */}
-                                <div className="flex sm:hidden flex-col space-y-1 text-sm text-gray-500">
+                                <div className="flex sm:hidden flex-col space-y-1 text-base text-gray-500">
                                   <div className="flex items-center space-x-1">
                                     <Calendar className="w-4 h-4" />
                                     <span>{formatDisplayDate(appointment.date)}</span>
@@ -525,7 +525,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                                 </div>
                                 
                                 {/* Mobile: Compact info stack */}
-                                <div className="flex sm:hidden flex-col space-y-1 text-sm text-gray-500">
+                                <div className="flex sm:hidden flex-col space-y-1 text-base text-gray-500">
                                   <div className="flex items-center space-x-1">
                                     <Calendar className="w-4 h-4" />
                                     <span>{formatDisplayDate(appointment.date)}</span>
