@@ -125,25 +125,39 @@ const clientService = {
 
 // Appointment functions
 const appointmentService = {
-  // Get all appointments
+  // Get all appointments with optimized query
   async getAppointments() {
     try {
-      const { data, error } = await supabase
+      // First get appointments with basic info
+      const { data: appointments, error: appointmentsError } = await supabase
         .from('appointments')
-        .select(`
-          *,
-          clients (
-            id,
-            name,
-            phone,
-            email
-          )
-        `)
+        .select('*')
         .order('date', { ascending: true })
         .order('time', { ascending: true });
 
-      if (error) throw error;
-      return { success: true, appointments: data };
+      if (appointmentsError) throw appointmentsError;
+
+      // Get unique client IDs
+      const clientIds = [...new Set(appointments.map(apt => apt.client_id))];
+      
+      // Get clients in batch
+      const { data: clients, error: clientsError } = await supabase
+        .from('clients')
+        .select('id, name, phone, email')
+        .in('id', clientIds);
+
+      if (clientsError) throw clientsError;
+
+      // Create client lookup map
+      const clientMap = new Map(clients.map(client => [client.id, client]));
+
+      // Combine appointments with client data
+      const appointmentsWithClients = appointments.map(appointment => ({
+        ...appointment,
+        clients: clientMap.get(appointment.client_id) || null
+      }));
+
+      return { success: true, appointments: appointmentsWithClients };
     } catch (error) {
       console.error('Get appointments error:', error);
       return { success: false, error: error.message };

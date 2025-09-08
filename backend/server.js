@@ -556,6 +556,15 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Keep-alive endpoint to prevent cold starts
+app.get('/api/keepalive', (req, res) => {
+  res.json({ 
+    status: 'alive',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);

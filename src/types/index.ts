@@ -11,6 +11,12 @@ export interface Appointment {
   notes?: string;
   status: 'scheduled' | 'pending' | 'completed' | 'cancelled';
   createdAt: string;
+  clients?: {
+    id: string;
+    name: string;
+    phone: string;
+    email?: string;
+  } | null;
 }
 
 export interface Client {

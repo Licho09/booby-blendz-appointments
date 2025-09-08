@@ -1,14 +1,25 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { appointmentsAPI } from '../services/api';
 import type { Appointment } from '../types';
+
+// Cache for appointments data
+const appointmentsCache = {
+  data: null as Appointment[] | null,
+  timestamp: 0,
+  ttl: 5 * 60 * 1000, // 5 minutes cache
+};
 
 export function useAppointments() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const lastFetchTime = useRef(0);
 
   // Load appointments from API on mount
   useEffect(() => {
+    // Clear cache on mount to ensure fresh data
+    appointmentsCache.data = null;
+    appointmentsCache.timestamp = 0;
     loadAppointments();
   }, []);
 
@@ -38,16 +49,31 @@ export function useAppointments() {
     return () => window.removeEventListener('online', handleOnline);
   }, [appointments.length, error]);
 
-  const loadAppointments = async () => {
+  const loadAppointments = async (forceRefresh = false) => {
     try {
+      const now = Date.now();
+      
+      // Check cache first (unless force refresh)
+      if (!forceRefresh && appointmentsCache.data && (now - appointmentsCache.timestamp) < appointmentsCache.ttl) {
+        setAppointments(appointmentsCache.data);
+        setIsLoading(false);
+        return;
+      }
+
+      // Prevent multiple simultaneous requests
+      if (now - lastFetchTime.current < 1000) { // 1 second throttle
+        return;
+      }
+      lastFetchTime.current = now;
+
       setIsLoading(true);
       setError(null);
       
-      // Add a minimum loading time to prevent flickering on fast connections
-      const [data] = await Promise.all([
-        appointmentsAPI.getAll(),
-        new Promise(resolve => setTimeout(resolve, 300)) // Minimum 300ms loading
-      ]);
+      const data = await appointmentsAPI.getAll();
+      
+      // Update cache
+      appointmentsCache.data = data;
+      appointmentsCache.timestamp = now;
       
       setAppointments(data);
     } catch (err) {
@@ -69,6 +95,11 @@ export function useAppointments() {
       setError(null);
       const newAppointment = await appointmentsAPI.create(appointmentData);
       setAppointments(prev => [...prev, newAppointment]);
+      
+      // Clear cache to ensure fresh data
+      appointmentsCache.data = null;
+      appointmentsCache.timestamp = 0;
+      
       return { success: true, appointment: newAppointment };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to create appointment';
@@ -88,6 +119,11 @@ export function useAppointments() {
             : appointment
         )
       );
+      
+      // Clear cache to ensure fresh data
+      appointmentsCache.data = null;
+      appointmentsCache.timestamp = 0;
+      
       return { success: true, appointment: updatedAppointment };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to update appointment';
@@ -101,6 +137,11 @@ export function useAppointments() {
       setError(null);
       await appointmentsAPI.delete(id);
       setAppointments(prev => prev.filter(appointment => appointment.id !== id));
+      
+      // Clear cache to ensure fresh data
+      appointmentsCache.data = null;
+      appointmentsCache.timestamp = 0;
+      
       return { success: true };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to delete appointment';
@@ -110,7 +151,7 @@ export function useAppointments() {
   };
 
   const refreshAppointments = () => {
-    loadAppointments();
+    loadAppointments(true); // Force refresh, bypass cache
   };
 
   return {
