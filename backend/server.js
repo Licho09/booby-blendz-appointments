@@ -287,7 +287,7 @@ app.post('/api/clients', authenticateToken, async (req, res) => {
   try {
     const clientData = {
       ...req.body,
-      userId: req.user.userId  // Get userId from JWT token
+      userId: '550e8400-e29b-41d4-a716-446655440000'  // Hardcoded single user ID
     };
 
     const result = await clientService.createClient(clientData);
@@ -393,7 +393,7 @@ app.post('/api/appointments', authenticateToken, async (req, res) => {
   try {
     const appointmentData = {
       ...req.body,
-      userId: req.user.userId  // Get userId from JWT token
+      userId: '550e8400-e29b-41d4-a716-446655440000'  // Hardcoded single user ID
     };
 
     const result = await appointmentService.createAppointment(appointmentData);
@@ -553,15 +553,6 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString(),
     emailConfigured: !!(process.env.EMAIL_USER && process.env.EMAIL_PASSWORD),
     supportedCarriers: Object.keys(CARRIER_EMAILS)
-  });
-});
-
-// Keep-alive endpoint to prevent cold starts
-app.get('/api/keepalive', (req, res) => {
-  res.json({ 
-    status: 'alive',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime()
   });
 });
 

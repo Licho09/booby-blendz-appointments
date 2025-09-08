@@ -11,39 +11,11 @@ if (!supabaseUrl || !supabaseAnonKey) {
   process.exit(1);
 }
 
-// Client for user operations (uses anon key) with optimized settings
-const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  db: {
-    schema: 'public',
-  },
-  auth: {
-    persistSession: false, // Disable session persistence for server-side
-    autoRefreshToken: false,
-    detectSessionInUrl: false
-  },
-  global: {
-    headers: {
-      'Connection': 'keep-alive',
-    },
-  },
-});
+// Client for user operations (uses anon key)
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// Admin client for server operations (uses service role key) with optimized settings
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
-  db: {
-    schema: 'public',
-  },
-  auth: {
-    persistSession: false,
-    autoRefreshToken: false,
-    detectSessionInUrl: false
-  },
-  global: {
-    headers: {
-      'Connection': 'keep-alive',
-    },
-  },
-});
+// Admin client for server operations (uses service role key)
+const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
 module.exports = { supabase, supabaseAdmin };
 

@@ -52,14 +52,8 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
     return date.toLocaleDateString();
   };
 
-  const getClientName = (appointment: any) => {
-    // First try to get client name from the appointment's clients property (new optimized structure)
-    if (appointment.clients && appointment.clients.name) {
-      return appointment.clients.name;
-    }
-    
-    // Fallback to looking up by clientId in the clients array (old structure)
-    const client = clients.find(c => c.id === appointment.clientId);
+  const getClientName = (clientId: string) => {
+    const client = clients.find(c => c.id === clientId);
     return client?.name || 'Unknown Client';
   };
 
@@ -77,7 +71,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
   };
 
   const filteredAppointments = appointments.filter(appointment => {
-    const clientName = getClientName(appointment);
+    const clientName = getClientName(appointment.clientId);
     const matchesSearch = clientName.toLowerCase().includes(searchTerm.toLowerCase());
 
     if (!matchesSearch) return false;
@@ -335,7 +329,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                                 <div className="flex sm:hidden items-center justify-between">
                                   <div className="flex items-center space-x-2">
                                     <User className="w-6 h-6 text-gray-400" />
-                                    <span className="text-2xl font-semibold">{getClientName(appointment)}</span>
+                                    <span className="text-2xl font-semibold">{getClientName(appointment.clientId)}</span>
                                   </div>
                                   <div className={`text-3xl font-bold ${
                                     theme === 'dark' ? 'text-white' : 'text-blue-600'
@@ -348,7 +342,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                                 <div className="hidden sm:flex sm:items-center sm:space-x-3">
                                   <div className="flex items-center space-x-2">
                                     <User className="w-6 h-6 text-gray-400" />
-                                    <span className="text-2xl font-semibold">{getClientName(appointment)}</span>
+                                    <span className="text-2xl font-semibold">{getClientName(appointment.clientId)}</span>
                                   </div>
                                   <span className={`px-2 py-1 rounded-full text-xs font-medium w-fit ${getStatusColor(appointment.status)}`}>
                                     {appointment.status}
@@ -510,7 +504,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                                 <div className="flex sm:hidden items-center justify-between">
                                   <div className="flex items-center space-x-2">
                                     <User className="w-6 h-6 text-gray-400" />
-                                    <span className="text-2xl font-semibold">{getClientName(appointment)}</span>
+                                    <span className="text-2xl font-semibold">{getClientName(appointment.clientId)}</span>
                                   </div>
                                   <div className={`text-3xl font-bold ${
                                     theme === 'dark' ? 'text-white' : 'text-green-600'
@@ -523,7 +517,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                                 <div className="hidden sm:flex sm:items-center sm:space-x-3">
                                   <div className="flex items-center space-x-2">
                                     <User className="w-6 h-6 text-gray-400" />
-                                    <span className="text-2xl font-semibold">{getClientName(appointment)}</span>
+                                    <span className="text-2xl font-semibold">{getClientName(appointment.clientId)}</span>
                                   </div>
                                   <span className={`px-2 py-1 rounded-full text-xs font-medium w-fit ${getStatusColor(appointment.status)}`}>
                                     {appointment.status}
@@ -661,7 +655,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                       <div className="flex sm:hidden items-center justify-between">
                         <div className="flex items-center space-x-2">
                           <User className="w-6 h-6 text-gray-400" />
-                          <span className="text-2xl font-semibold">{getClientName(appointment)}</span>
+                          <span className="text-2xl font-semibold">{getClientName(appointment.clientId)}</span>
                         </div>
                         <div className={`text-3xl font-bold ${
                           theme === 'dark' ? 'text-white' : 'text-slate-600'
@@ -674,7 +668,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                       <div className="hidden sm:flex sm:items-center sm:space-x-3">
                         <div className="flex items-center space-x-2">
                           <User className="w-6 h-6 text-gray-400" />
-                          <span className="text-2xl font-semibold">{getClientName(appointment)}</span>
+                          <span className="text-2xl font-semibold">{getClientName(appointment.clientId)}</span>
                         </div>
                         <span className={`px-2 py-1 rounded-full text-xs font-medium w-fit ${getStatusColor(appointment.status)}`}>
                           {appointment.status}
