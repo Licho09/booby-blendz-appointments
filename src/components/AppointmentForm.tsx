@@ -150,7 +150,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
               name="clientName"
               value={formData.clientName}
               onChange={handleChange}
-              placeholder="Enter client name"
+              placeholder="Enter client name (max 14 chars)"
               maxLength={14}
               required
               className={`w-full px-3 py-2 rounded-lg border transition-colors ${

@@ -1,10 +1,8 @@
-const API_BASE_URL = 'http://localhost:3001/api';
+const API_BASE_URL = 'https://booby-blendz-backend.onrender.com/api';
 
 // Helper function to get auth token
 const getAuthToken = (): string | null => {
-  const token = localStorage.getItem('authToken');
-  console.log('🔑 Auth token:', token ? 'Present' : 'Missing');
-  return token;
+  return localStorage.getItem('authToken');
 };
 
 // Helper function to make API requests with timeout and retry
@@ -136,19 +134,15 @@ export const clientsAPI = {
 // Appointments API
 export const appointmentsAPI = {
   getAll: async () => {
-    console.log('🔍 Fetching appointments from API...');
     const response = await apiRequest('/appointments');
-    console.log('📋 Appointments response:', response);
     return response.appointments || [];
   },
 
   create: async (appointmentData: any) => {
-    console.log('➕ Creating appointment:', appointmentData);
     const response = await apiRequest('/appointments', {
       method: 'POST',
       body: JSON.stringify(appointmentData),
     });
-    console.log('✅ Appointment created:', response);
     return response.appointment;
   },
 
