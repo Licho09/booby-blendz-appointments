@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { X, Calendar, Clock, User, FileText, MessageCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, Calendar, Clock, User, MessageCircle } from 'lucide-react';
 import type { Appointment, Client } from '../types';
 import { smsService } from '../services/smsService';
 
@@ -42,63 +42,83 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Enhanced validation
     if (!formData.clientName || !formData.date || !formData.time) {
+      console.error('Form validation failed:', { 
+        clientName: formData.clientName, 
+        date: formData.date, 
+        time: formData.time 
+      });
+      alert('Please fill in all required fields (Client Name, Date, Time)');
       return;
     }
     
     // Debug logging for form submission
-    console.log('Form submitted with date:', formData.date);
+    console.log('Form submitted with data:', formData);
     
-    // Find existing client or create a new one
-    let clientId = '';
-    const existingClient = clients.find(client => 
-      client.name.toLowerCase() === formData.clientName.toLowerCase()
-    );
-    
-    if (existingClient) {
-      clientId = existingClient.id;
-    } else {
-      // Create a new client ID for the new client name
-      clientId = crypto.randomUUID();
-    }
-    
-    const appointmentData = {
-      ...formData,
-      clientId,
-      title: formData.clientName // Use client name as title
-    };
-    
-    setIsSubmitting(true);
-    onSubmit(appointmentData);
-    
-    // Send SMS notification if enabled
-    if (sendSMS) {
-      setSmsStatus('sending');
-      try {
-        const smsResult = await smsService.sendAppointmentSMS({
-          clientName: formData.clientName,
-          date: formData.date,
-          time: formData.time,
-          duration: formData.duration,
-          price: formData.price,
-          notes: formData.notes,
-          status: formData.status
-        });
-        
-        if (smsResult.success) {
-          setSmsStatus('success');
-          setSmsMessage('SMS confirmation sent successfully! 📱');
-        } else {
-          setSmsStatus('error');
-          setSmsMessage(`SMS failed: ${smsResult.error}`);
-        }
-      } catch (error) {
-        setSmsStatus('error');
-        setSmsMessage('Failed to send SMS notification');
-        console.error('SMS error:', error);
+    try {
+      setIsSubmitting(true);
+      
+      // Find existing client or create a new one
+      let clientId = '';
+      const existingClient = clients.find(client => 
+        client.name.toLowerCase() === formData.clientName.toLowerCase()
+      );
+      
+      if (existingClient) {
+        clientId = existingClient.id;
+        console.log('Using existing client:', existingClient);
+      } else {
+        // Create a new client ID for the new client name
+        clientId = crypto.randomUUID();
+        console.log('Creating new client with ID:', clientId);
       }
+      
+      const appointmentData = {
+        ...formData,
+        clientId,
+        title: formData.clientName // Use client name as title
+      };
+      
+      console.log('Submitting appointment data:', appointmentData);
+      await onSubmit(appointmentData);
+      console.log('Appointment submitted successfully');
+      
+      // Send SMS notification if enabled
+      if (sendSMS) {
+        setSmsStatus('sending');
+        try {
+          const smsResult = await smsService.sendAppointmentSMS({
+            clientName: formData.clientName,
+            date: formData.date,
+            time: formData.time,
+            duration: formData.duration,
+            price: formData.price,
+            notes: formData.notes,
+            status: formData.status
+          });
+          
+          if (smsResult.success) {
+            setSmsStatus('success');
+            setSmsMessage('SMS confirmation sent successfully! 📱');
+          } else {
+            setSmsStatus('error');
+            setSmsMessage(`SMS failed: ${smsResult.error}`);
+          }
+        } catch (error) {
+          setSmsStatus('error');
+          setSmsMessage('Failed to send SMS notification');
+          console.error('SMS error:', error);
+        }
+      }
+      
+    } catch (error) {
+      console.error('Error submitting appointment:', error);
+      alert('Failed to create appointment. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
-    setIsSubmitting(false);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
