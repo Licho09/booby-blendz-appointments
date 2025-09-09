@@ -177,6 +177,31 @@ const appointmentService = {
     }
   },
 
+  // Get appointments by specific date
+  async getAppointmentsByDate(date) {
+    try {
+      const { data, error } = await supabase
+        .from('appointments')
+        .select(`
+          *,
+          clients (
+            id,
+            name,
+            phone,
+            email
+          )
+        `)
+        .eq('date', date)
+        .order('time', { ascending: true });
+
+      if (error) throw error;
+      return { success: true, appointments: data };
+    } catch (error) {
+      console.error('Get appointments by date error:', error);
+      return { success: false, error: error.message };
+    }
+  },
+
   // Create new appointment
   async createAppointment(appointmentData) {
     try {

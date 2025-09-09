@@ -90,6 +90,32 @@ class SMSService {
     }
   }
 
+  // Send daily reminder
+  async sendDailyReminder(): Promise<SMSResponse> {
+    try {
+      const response = await fetch(`${this.baseURL}/api/send-daily-reminder`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send daily reminder');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error sending daily reminder:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      };
+    }
+  }
+
   // Test the Email-to-SMS service
   async testSMS(): Promise<SMSResponse> {
     const testAppointment: AppointmentData = {

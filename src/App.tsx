@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Clock, DollarSign, Plus, Moon, Sun, Instagram, LogOut } from 'lucide-react';
 import AppointmentList from './components/AppointmentList';
 import AppointmentForm from './components/AppointmentForm';
@@ -22,7 +22,7 @@ function App() {
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
 
   const { appointments, addAppointment, updateAppointment, deleteAppointment, isLoading: appointmentsLoading, error: appointmentsError, refreshAppointments } = useAppointments();
-  const { clients, addClient, updateClient } = useClients();
+  const { clients, addClient, updateClient, isLoading: clientsLoading } = useClients();
   const { theme, toggleTheme } = useTheme();
   const { isAuthenticated, isLoading, login, signup, logout } = useAuth();
 
@@ -44,16 +44,14 @@ function App() {
 
   const handleAppointmentSubmit = async (appointmentData: any) => {
     try {
-      console.log('App.tsx - Received appointment data:', appointmentData);
-      
       // Check if we need to create a new client
       const existingClient = clients.find(client => 
         client.name.toLowerCase() === appointmentData.clientName.toLowerCase()
       );
       
-      let clientId = appointmentData.clientId; // Use the clientId from the form
+      let clientId = appointmentData.clientId; // Initialize with existing or placeholder
       
-      if (!existingClient && !appointmentData.clientId) {
+      if (!existingClient) {
         // This is a new client, create it first
         const newClient = {
           name: appointmentData.clientName,
@@ -62,17 +60,14 @@ function App() {
           notes: ''
         };
         
-        console.log('Creating new client:', newClient);
         const clientResult = await addClient(newClient);
         if (clientResult.success) {
           clientId = clientResult.client.id;
-          console.log('New client created with ID:', clientId);
         } else {
           throw new Error('Failed to create client');
         }
-      } else if (existingClient) {
+      } else {
         clientId = existingClient.id;
-        console.log('Using existing client ID:', clientId);
       }
 
       // Now create the appointment with the proper data structure
@@ -87,14 +82,10 @@ function App() {
         status: appointmentData.status
       };
 
-      console.log('Creating appointment with data:', appointmentToCreate);
-
       if (selectedAppointmentId) {
         await updateAppointment(selectedAppointmentId, appointmentToCreate);
-        console.log('Appointment updated successfully');
       } else {
         await addAppointment(appointmentToCreate);
-        console.log('Appointment created successfully');
       }
       
       setShowAppointmentForm(false);
@@ -102,7 +93,6 @@ function App() {
     } catch (error) {
       console.error('Error handling appointment:', error);
       alert('Failed to create appointment. Please try again.');
-      throw error; // Re-throw so the form can handle it
     }
   };
 

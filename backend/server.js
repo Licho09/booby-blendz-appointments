@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
+const cron = require('node-cron');
 require('dotenv').config();
 
 // Import services and middleware
@@ -90,7 +91,7 @@ const createTransporter = () => {
   });
 };
 
-// Email-to-SMS notification function
+// Email-to-SMS notification function for individual appointments
 const sendAppointmentEmailSMS = async (appointmentData) => {
   try {
     const { clientName, date, time, duration, price } = appointmentData;
@@ -132,6 +133,121 @@ Time: ${formattedTime}`;
     
   } catch (error) {
     console.error('Error sending Email-to-SMS:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+// Helper function to split message into SMS-sized chunks
+const splitMessageIntoChunks = (message, maxLength = 95) => {
+  const chunks = [];
+  
+  // Split by lines first
+  const lines = message.split('\n');
+  
+  // Find where to split - look for appointment lines
+  let currentChunk = '';
+  let appointmentCount = 0;
+  
+  for (const line of lines) {
+    // Check if this is an appointment line (starts with number and dot)
+    const isAppointmentLine = /^\d+\./.test(line);
+    
+    if (isAppointmentLine) {
+      appointmentCount++;
+      
+      // If this would be the 3rd appointment and we already have content, split here
+      if (appointmentCount === 3 && currentChunk.trim().length > 0) {
+        chunks.push(currentChunk.trim());
+        currentChunk = line;
+        continue;
+      }
+    }
+    
+    // Add line to current chunk
+    currentChunk += (currentChunk.length > 0 ? '\n' : '') + line;
+    
+    // If chunk gets too long, split it
+    if (currentChunk.length > maxLength && chunks.length > 0) {
+      chunks.push(currentChunk.trim());
+      currentChunk = '';
+    }
+  }
+  
+  // Add the last chunk if it has content
+  if (currentChunk.trim().length > 0) {
+    chunks.push(currentChunk.trim());
+  }
+  
+  return chunks;
+};
+
+// Helper function to delay execution
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Daily morning reminder function with multi-part SMS support
+const sendDailyReminderSMS = async (appointmentsCount, appointmentsList = []) => {
+  try {
+    // Use barber phone number and carrier from environment variables
+    const barberPhoneNumber = process.env.BARBER_PHONE_NUMBER || '8326807628';
+    const barberCarrier = process.env.BARBER_CARRIER || 'tmobile';
+    
+    const today = new Date();
+    const formattedDate = formatDate(today.toISOString().split('T')[0]);
+    
+    let message = `You have ${appointmentsCount} appointment${appointmentsCount !== 1 ? 's' : ''} today.`;
+    
+    // If there are appointments, list them (shorter format)
+    if (appointmentsList.length > 0) {
+      message += '\n\nToday:\n';
+      appointmentsList.forEach((appointment, index) => {
+        const formattedTime = formatTime(appointment.time);
+        message += `${index + 1}. ${appointment.clients.name} ${formattedTime}\n`;
+      });
+    }
+    
+    // Split message into chunks
+    const messageChunks = splitMessageIntoChunks(message, 95);
+    
+    console.log(`📱 Sending ${messageChunks.length} SMS part${messageChunks.length !== 1 ? 's' : ''} with 10-second delays...`);
+    
+    // Get the carrier email address for barber
+    const toEmail = getCarrierEmail(barberPhoneNumber, barberCarrier);
+    
+    // Create transporter
+    const transporter = createTransporter();
+    
+    const results = [];
+    
+    // Send each chunk with a 10-second delay
+    for (let i = 0; i < messageChunks.length; i++) {
+      const chunk = messageChunks[i];
+      // Email options
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: toEmail,
+        subject: 'Daily Appointment Reminder',
+        text: chunk,
+        html: `<p>${chunk.replace(/\n/g, '<br>')}</p>`
+      };
+      
+      // Send email
+      const info = await transporter.sendMail(mailOptions);
+      results.push({ part: i + 1, messageId: info.messageId });
+      
+      console.log(`✅ Part ${i + 1}/${messageChunks.length} sent successfully`);
+      
+      // Wait 1 minute before sending the next part (except for the last part)
+      if (i < messageChunks.length - 1) {
+        console.log('⏳ Waiting 1 minute before sending next part...');
+        await delay(60000); // 60 seconds (1 minute)
+      }
+    }
+    
+    console.log('📱 All SMS parts sent successfully');
+    return { success: true, messageId: results, parts: messageChunks.length };
+    
+  } catch (error) {
+    console.error('Error sending daily reminder Email-to-SMS:', error);
     return { success: false, error: error.message };
   }
 };
@@ -180,6 +296,50 @@ app.post('/api/send-appointment-sms', async (req, res) => {
     res.status(500).json({ 
       success: false, 
       error: 'Internal server error' 
+    });
+  }
+});
+
+// Endpoint to send daily reminder
+app.post('/api/send-daily-reminder', async (req, res) => {
+  try {
+    // Get today's appointments
+    const today = new Date().toISOString().split('T')[0];
+    const result = await appointmentService.getAppointmentsByDate(today);
+    
+    if (!result.success) {
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to fetch today\'s appointments'
+      });
+    }
+    
+    const todaysAppointments = result.appointments || [];
+    const appointmentsCount = todaysAppointments.length;
+    
+    // Send daily reminder
+    const reminderResult = await sendDailyReminderSMS(appointmentsCount, todaysAppointments);
+    
+    if (reminderResult.success) {
+      res.json({
+        success: true,
+        message: `Daily reminder sent successfully! Found ${appointmentsCount} appointment${appointmentsCount !== 1 ? 's' : ''} for today.`,
+        appointmentsCount,
+        messageId: reminderResult.messageId
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to send daily reminder',
+        details: reminderResult.error
+      });
+    }
+    
+  } catch (error) {
+    console.error('Error in daily reminder endpoint:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error'
     });
   }
 });
@@ -399,22 +559,6 @@ app.post('/api/appointments', authenticateToken, async (req, res) => {
     const result = await appointmentService.createAppointment(appointmentData);
     
     if (result.success) {
-      // Only send SMS notification if explicitly requested
-      if (req.body.sendSMS) {
-        try {
-          await sendAppointmentEmailSMS({
-            clientName: result.appointment.clients.name,
-            date: result.appointment.date,
-            time: result.appointment.time,
-            duration: result.appointment.duration,
-            price: result.appointment.price
-          });
-        } catch (smsError) {
-          console.error('SMS notification failed:', smsError);
-          // Don't fail the appointment creation if SMS fails
-        }
-      }
-
       res.json({
         success: true,
         message: 'Appointment created successfully',
@@ -565,10 +709,48 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Scheduled job to send daily reminder every morning at 8:00 AM
+cron.schedule('0 8 * * *', async () => {
+  console.log('🌅 Running daily reminder job...');
+  
+  try {
+    // Get today's appointments
+    const today = new Date().toISOString().split('T')[0];
+    const result = await appointmentService.getAppointmentsByDate(today);
+    
+    if (!result.success) {
+      console.error('❌ Failed to fetch today\'s appointments for daily reminder:', result.error);
+      return;
+    }
+    
+    const todaysAppointments = result.appointments || [];
+    const appointmentsCount = todaysAppointments.length;
+    
+    // Only send reminder if there are appointments today
+    if (appointmentsCount > 0) {
+      const reminderResult = await sendDailyReminderSMS(appointmentsCount, todaysAppointments);
+      
+      if (reminderResult.success) {
+        console.log(`✅ Daily reminder sent successfully! Found ${appointmentsCount} appointment${appointmentsCount !== 1 ? 's' : ''} for today.`);
+      } else {
+        console.error('❌ Failed to send daily reminder:', reminderResult.error);
+      }
+    } else {
+      console.log('📅 No appointments scheduled for today, skipping reminder.');
+    }
+    
+  } catch (error) {
+    console.error('❌ Error in daily reminder cron job:', error);
+  }
+}, {
+  timezone: "America/Chicago" // Adjust timezone as needed
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Booby_Blendz Email-to-SMS Server running on port ${PORT}`);
   console.log(`📧 Email configured: ${!!(process.env.EMAIL_USER && process.env.EMAIL_PASSWORD)}`);
   console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);
   console.log(`📱 Supported carriers: ${Object.keys(CARRIER_EMAILS).join(', ')}`);
+  console.log(`⏰ Daily reminder scheduled for 8:00 AM (America/Chicago timezone)`);
 });

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { X, Calendar, Clock, User, MessageCircle } from 'lucide-react';
+import { X, Calendar, Clock, User } from 'lucide-react';
 import type { Appointment, Client } from '../types';
-import { smsService } from '../services/smsService';
 
 interface AppointmentFormProps {
   appointment?: Appointment;
@@ -35,9 +34,6 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
     status: appointment?.status || 'pending' as const
   });
 
-  const [sendSMS, setSendSMS] = useState(true);
-  const [smsStatus, setSmsStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
-  const [smsMessage, setSmsMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -60,19 +56,20 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
     try {
       setIsSubmitting(true);
       
-      // Find existing client or create a new one
-      let clientId = '';
+      // Find existing client
       const existingClient = clients.find(client => 
         client.name.toLowerCase() === formData.clientName.toLowerCase()
       );
       
+      let clientId = '';
       if (existingClient) {
         clientId = existingClient.id;
         console.log('Using existing client:', existingClient);
       } else {
-        // Create a new client ID for the new client name
-        clientId = crypto.randomUUID();
-        console.log('Creating new client with ID:', clientId);
+        // For new clients, let the parent component handle client creation
+        // We'll pass the client name and let App.tsx create the client first
+        clientId = ''; // Empty string to indicate new client
+        console.log('New client detected, will be created by parent component');
       }
       
       const appointmentData = {
@@ -84,34 +81,6 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
       console.log('Submitting appointment data:', appointmentData);
       await onSubmit(appointmentData);
       console.log('Appointment submitted successfully');
-      
-      // Send SMS notification if enabled
-      if (sendSMS) {
-        setSmsStatus('sending');
-        try {
-          const smsResult = await smsService.sendAppointmentSMS({
-            clientName: formData.clientName,
-            date: formData.date,
-            time: formData.time,
-            duration: formData.duration,
-            price: formData.price,
-            notes: formData.notes,
-            status: formData.status
-          });
-          
-          if (smsResult.success) {
-            setSmsStatus('success');
-            setSmsMessage('SMS confirmation sent successfully! 📱');
-          } else {
-            setSmsStatus('error');
-            setSmsMessage(`SMS failed: ${smsResult.error}`);
-          }
-        } catch (error) {
-          setSmsStatus('error');
-          setSmsMessage('Failed to send SMS notification');
-          console.error('SMS error:', error);
-        }
-      }
       
     } catch (error) {
       console.error('Error submitting appointment:', error);
@@ -343,37 +312,6 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
             />
           </div>
 
-          {/* SMS Notification Toggle */}
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                id="sendSMS"
-                checked={sendSMS}
-                onChange={(e) => setSendSMS(e.target.checked)}
-                className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-              />
-              <label htmlFor="sendSMS" className="flex items-center space-x-2 text-sm font-medium">
-                <MessageCircle className="w-4 h-4" />
-                <span>Send notification to barber</span>
-              </label>
-            </div>
-            
-            {/* SMS Status */}
-            {smsStatus !== 'idle' && (
-              <div className={`p-2 rounded-lg text-sm ${
-                smsStatus === 'sending' 
-                  ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-                  : smsStatus === 'success'
-                  ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                  : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-              }`}>
-                {smsStatus === 'sending' && '📧 Sending Email-to-SMS...'}
-                {smsStatus === 'success' && smsMessage}
-                {smsStatus === 'error' && smsMessage}
-              </div>
-            )}
-          </div>
 
           {/* Actions */}
           <div className="flex space-x-3 pt-4">
