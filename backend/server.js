@@ -97,8 +97,8 @@ const sendAppointmentEmailSMS = async (appointmentData) => {
     const { clientName, date, time, duration, price } = appointmentData;
     
     // Use barber phone number and carrier from environment variables
-    const barberPhoneNumber = process.env.BARBER_PHONE_NUMBER || '8326807628';
-    const barberCarrier = process.env.BARBER_CARRIER || 'tmobile';
+    const barberPhoneNumber = process.env.BARBER_PHONE_NUMBER || '8327080194';
+    const barberCarrier = process.env.BARBER_CARRIER || 'verizon';
     
     const formattedDate = formatDate(date);
     const formattedTime = formatTime(time);
@@ -156,9 +156,11 @@ const splitMessageIntoChunks = (message, maxLength = 95) => {
       appointmentCount++;
       
       // If this would be the 3rd appointment and we already have content, split here
+      // This ensures only 2 appointments per message
       if (appointmentCount === 3 && currentChunk.trim().length > 0) {
         chunks.push(currentChunk.trim());
-        currentChunk = line;
+        // Start new chunk with a blank line for proper spacing
+        currentChunk = '\n' + line;
         continue;
       }
     }
@@ -188,8 +190,8 @@ const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 const sendDailyReminderSMS = async (appointmentsCount, appointmentsList = []) => {
   try {
     // Use barber phone number and carrier from environment variables
-    const barberPhoneNumber = process.env.BARBER_PHONE_NUMBER || '8326807628';
-    const barberCarrier = process.env.BARBER_CARRIER || 'tmobile';
+    const barberPhoneNumber = process.env.BARBER_PHONE_NUMBER || '8327080194';
+    const barberCarrier = process.env.BARBER_CARRIER || 'verizon';
     
     const today = new Date();
     const formattedDate = formatDate(today.toISOString().split('T')[0]);
@@ -218,7 +220,7 @@ const sendDailyReminderSMS = async (appointmentsCount, appointmentsList = []) =>
     
     const results = [];
     
-    // Send each chunk with a 10-second delay
+    // Send each chunk with increasing delays
     for (let i = 0; i < messageChunks.length; i++) {
       const chunk = messageChunks[i];
       // Email options
@@ -236,10 +238,13 @@ const sendDailyReminderSMS = async (appointmentsCount, appointmentsList = []) =>
       
       console.log(`✅ Part ${i + 1}/${messageChunks.length} sent successfully`);
       
-      // Wait 1 minute before sending the next part (except for the last part)
+      // Wait with specific delays before sending the next part (except for the last part)
       if (i < messageChunks.length - 1) {
-        console.log('⏳ Waiting 1 minute before sending next part...');
-        await delay(60000); // 60 seconds (1 minute)
+        const delayMinutes = i === 0 ? 1 : 2; // 1 minute after first message, then 2 minutes between all others
+        const delayMs = delayMinutes * 60000; // Convert to milliseconds
+        
+        console.log(`⏳ Waiting ${delayMinutes} minute${delayMinutes !== 1 ? 's' : ''} before sending next part...`);
+        await delay(delayMs);
       }
     }
     
@@ -257,8 +262,66 @@ app.get('/', (req, res) => {
   res.json({ 
     message: 'Booby_Blendz Email-to-SMS API is running! 💈',
     status: 'active',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      health: '/api/health',
+      carriers: '/api/carriers',
+      sendSMS: '/api/send-appointment-sms',
+      testSMS: '/api/test-sms'
+    }
   });
+});
+
+// Test SMS endpoint
+app.post('/api/test-sms', async (req, res) => {
+  try {
+    const { phoneNumber, carrier, message } = req.body;
+    
+    // Use provided values or defaults
+    const testPhoneNumber = phoneNumber || process.env.BARBER_PHONE_NUMBER || '8327080194';
+    const testCarrier = carrier || process.env.BARBER_CARRIER || 'verizon';
+    const testMessage = message || 'Test SMS from Booby_Blendz! 💈';
+    
+    // Get the carrier email address
+    const toEmail = getCarrierEmail(testPhoneNumber, testCarrier);
+    
+    // Create transporter
+    const transporter = createTransporter();
+    
+    // Email options
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: toEmail,
+      subject: 'Test SMS',
+      text: testMessage,
+      html: `<p>${testMessage}</p>`
+    };
+    
+    // Send email
+    const info = await transporter.sendMail(mailOptions);
+    
+    console.log('Test SMS sent successfully:', info.messageId);
+    res.json({
+      success: true,
+      message: 'Test SMS sent successfully!',
+      messageId: info.messageId,
+      details: {
+        phoneNumber: testPhoneNumber,
+        carrier: testCarrier,
+        email: toEmail,
+        messageLength: testMessage.length,
+        message: testMessage
+      }
+    });
+    
+  } catch (error) {
+    console.error('Error sending test SMS:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to send test SMS',
+      details: error.message
+    });
+  }
 });
 
 // Endpoint to send appointment confirmation Email-to-SMS
@@ -709,8 +772,8 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Scheduled job to send daily reminder every morning at 8:00 AM
-cron.schedule('0 8 * * *', async () => {
+// Scheduled job to send daily reminder every morning at 7:30 AM
+cron.schedule('30 7 * * *', async () => {
   console.log('🌅 Running daily reminder job...');
   
   try {
@@ -752,5 +815,5 @@ app.listen(PORT, () => {
   console.log(`📧 Email configured: ${!!(process.env.EMAIL_USER && process.env.EMAIL_PASSWORD)}`);
   console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);
   console.log(`📱 Supported carriers: ${Object.keys(CARRIER_EMAILS).join(', ')}`);
-  console.log(`⏰ Daily reminder scheduled for 8:00 AM (America/Chicago timezone)`);
+  console.log(`⏰ Daily reminder scheduled for 7:30 AM (America/Chicago timezone)`);
 });
