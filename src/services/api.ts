@@ -5,8 +5,7 @@ const getAuthToken = (): string | null => {
   return localStorage.getItem('authToken');
 };
 
-// Flag to prevent multiple redirects
-let isRedirecting = false;
+// No automatic redirects - user handles logout manually
 
 // Helper function to make API requests with timeout and retry
 const apiRequest = async (
@@ -40,15 +39,8 @@ const apiRequest = async (
 
     // Check for authentication errors (401, 403)
     if (response.status === 401 || response.status === 403) {
-      console.log('🔐 Authentication token expired, logging out...');
-      authAPI.logout();
-      
-      // Only redirect if we're not already redirecting
-      if (!isRedirecting) {
-        isRedirecting = true;
-        window.location.replace('/');
-      }
-      
+      console.log('🔐 Authentication token expired');
+      // Don't automatically logout/redirect - let the user handle it manually
       throw new Error('Session expired. Please log in again.');
     }
 
@@ -97,7 +89,6 @@ export const authAPI = {
     if (response.success && response.token) {
       localStorage.setItem('authToken', response.token);
       localStorage.setItem('user', JSON.stringify(response.user));
-      isRedirecting = false; // Reset redirect flag on successful login
     }
     
     return response;
@@ -120,20 +111,10 @@ export const authAPI = {
     return !!getAuthToken();
   },
 
-  // Check if token is expired and handle it
+  // Check if token exists (no automatic redirect)
   checkTokenExpiration: () => {
     const token = getAuthToken();
-    if (!token) {
-      // Only redirect if we're not already on the login page and not already redirecting
-      if (window.location.pathname !== '/' && window.location.pathname !== '/login' && !isRedirecting) {
-        isRedirecting = true;
-        authAPI.logout();
-        // Use replace instead of href to prevent back button issues
-        window.location.replace('/');
-      }
-      return false;
-    }
-    return true;
+    return !!token;
   },
 };
 
