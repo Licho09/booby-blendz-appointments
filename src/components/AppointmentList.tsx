@@ -110,10 +110,10 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
         return true;
     }
   }).sort((a, b) => {
-    // Sort by date and time chronologically
+    // Sort by date and time from most recent to oldest (newest first)
     const dateA = new Date(`${a.date}T${a.time}`);
     const dateB = new Date(`${b.date}T${b.time}`);
-    return dateA.getTime() - dateB.getTime();
+    return dateB.getTime() - dateA.getTime();
   });
 
   const getStatusColor = (status: string) => {
