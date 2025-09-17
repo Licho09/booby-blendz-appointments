@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, DollarSign, Plus, Moon, Sun, Instagram, LogOut } from 'lucide-react';
+import { Clock, DollarSign, Plus, Moon, Sun, Instagram, LogOut, X } from 'lucide-react';
 import AppointmentList from './components/AppointmentList';
 import AppointmentForm from './components/AppointmentForm';
 import ClientForm from './components/ClientForm';
@@ -21,6 +21,7 @@ function App() {
 
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null);
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const { appointments, addAppointment, updateAppointment, deleteAppointment, isLoading: appointmentsLoading, error: appointmentsError, refreshAppointments } = useAppointments();
   const { clients, addClient, updateClient, isLoading: clientsLoading } = useClients();
@@ -153,10 +154,16 @@ function App() {
   };
 
   const handleLogout = () => {
-    const confirmed = window.confirm('Are you sure you want to log out?');
-    if (confirmed) {
-      logout();
-    }
+    setShowLogoutConfirm(true);
+  };
+
+  const confirmLogout = () => {
+    logout();
+    setShowLogoutConfirm(false);
+  };
+
+  const cancelLogout = () => {
+    setShowLogoutConfirm(false);
   };
 
   // Show loading screen while checking authentication
@@ -335,6 +342,59 @@ function App() {
           onClose={handleCloseForm}
           theme={theme}
         />
+      )}
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className={`w-full max-w-md rounded-xl shadow-xl ${
+            theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+          }`}>
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+              <h2 className="text-xl font-semibold">Confirm Logout</h2>
+              <button
+                onClick={cancelLogout}
+                className={`p-1 rounded-full transition-colors ${
+                  theme === 'dark' 
+                    ? 'hover:bg-gray-700' 
+                    : 'hover:bg-gray-100'
+                }`}
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-6">
+              <p className={`text-lg mb-6 ${
+                theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+              }`}>
+                Are you sure you want to log out?
+              </p>
+
+              {/* Buttons */}
+              <div className="flex space-x-3">
+                <button
+                  onClick={cancelLogout}
+                  className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
+                    theme === 'dark'
+                      ? 'bg-gray-700 hover:bg-gray-600 text-gray-300'
+                      : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                  }`}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmLogout}
+                  className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors"
+                >
+                  Log Out
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
