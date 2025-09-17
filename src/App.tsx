@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Clock, DollarSign, Plus, Moon, Sun, Instagram, LogOut } from 'lucide-react';
 import AppointmentList from './components/AppointmentList';
 import AppointmentForm from './components/AppointmentForm';
@@ -10,6 +10,7 @@ import { useAppointments } from './hooks/useAppointments';
 import { useClients } from './hooks/useClients';
 import { useTheme } from './hooks/useTheme';
 import { useAuth } from './hooks/useAuth';
+import { authAPI } from './services/api';
 import type { View } from './types';
 
 function App() {
@@ -25,6 +26,18 @@ function App() {
   const { clients, addClient, updateClient, isLoading: clientsLoading } = useClients();
   const { theme, toggleTheme } = useTheme();
   const { isAuthenticated, isLoading, login, signup, logout } = useAuth();
+
+  // Check for token expiration on app load and periodically
+  useEffect(() => {
+    if (isAuthenticated) {
+      // Check token expiration every 5 minutes
+      const interval = setInterval(() => {
+        authAPI.checkTokenExpiration();
+      }, 5 * 60 * 1000); // 5 minutes
+
+      return () => clearInterval(interval);
+    }
+  }, [isAuthenticated]);
 
   // Test message to see if app is loading
   console.log('App is loading! Current view:', currentView);

@@ -35,6 +35,20 @@ const apiRequest = async (
     clearTimeout(timeoutId);
     const data = await response.json();
 
+    // Check for authentication errors (401, 403)
+    if (response.status === 401 || response.status === 403) {
+      console.log('🔐 Authentication token expired, logging out...');
+      authAPI.logout();
+      
+      // Show user-friendly message
+      alert('Your session has expired. Please log in again.');
+      
+      // Redirect to login page
+      window.location.href = '/';
+      
+      throw new Error('Session expired. Please log in again.');
+    }
+
     if (!response.ok) {
       throw new Error(data.error || `HTTP error! status: ${response.status}`);
     }
@@ -43,7 +57,7 @@ const apiRequest = async (
   } catch (error) {
     clearTimeout(timeoutId);
     
-    // Retry logic for network errors
+    // Retry logic for network errors (but not for auth errors)
     if (retries > 0 && (error instanceof Error && (error.name === 'AbortError' || error.message.includes('fetch')))) {
       console.log(`Retrying API request (${endpoint}), attempts left: ${retries}`);
       await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
@@ -88,6 +102,9 @@ export const authAPI = {
   logout: () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
+    // Clear any cached data
+    localStorage.removeItem('appointments');
+    localStorage.removeItem('clients');
   },
 
   getCurrentUser: () => {
@@ -97,6 +114,17 @@ export const authAPI = {
 
   isAuthenticated: () => {
     return !!getAuthToken();
+  },
+
+  // Check if token is expired and handle it
+  checkTokenExpiration: () => {
+    const token = getAuthToken();
+    if (!token) {
+      authAPI.logout();
+      window.location.href = '/';
+      return false;
+    }
+    return true;
   },
 };
 

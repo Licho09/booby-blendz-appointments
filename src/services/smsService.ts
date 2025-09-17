@@ -130,6 +130,37 @@ class SMSService {
 
     return this.sendAppointmentSMS(testAppointment);
   }
+
+  // Test SMS with custom message
+  async testCustomSMS(phoneNumber?: string, carrier?: string, message?: string): Promise<SMSResponse> {
+    try {
+      const response = await fetch(`${this.baseURL}/api/test-sms`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          phoneNumber,
+          carrier,
+          message
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send test SMS');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error sending test SMS:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      };
+    }
+  }
 }
 
 // Export a singleton instance
