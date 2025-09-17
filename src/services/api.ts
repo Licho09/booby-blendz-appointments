@@ -5,7 +5,8 @@ const getAuthToken = (): string | null => {
   return localStorage.getItem('authToken');
 };
 
-// No automatic redirects - user handles logout manually
+// Flag to prevent multiple redirects
+let isRedirecting = false;
 
 // Helper function to make API requests with timeout and retry
 const apiRequest = async (
@@ -39,8 +40,28 @@ const apiRequest = async (
 
     // Check for authentication errors (401, 403)
     if (response.status === 401 || response.status === 403) {
-      console.log('🔐 Authentication token expired');
-      // Don't automatically logout/redirect - let the user handle it manually
+      console.log('🔐 Authentication token expired, logging out...');
+      authAPI.logout();
+      
+      // Show a user-friendly message and redirect after a delay
+      if (typeof window !== 'undefined' && !isRedirecting) {
+        isRedirecting = true;
+        
+        // Check if we're on mobile by looking at user agent
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        if (isMobile) {
+          // On mobile, show a brief message then redirect
+          alert('Your session has expired. Redirecting to login...');
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 1000);
+        } else {
+          // On desktop, redirect immediately
+          window.location.href = '/';
+        }
+      }
+      
       throw new Error('Session expired. Please log in again.');
     }
 
@@ -89,6 +110,7 @@ export const authAPI = {
     if (response.success && response.token) {
       localStorage.setItem('authToken', response.token);
       localStorage.setItem('user', JSON.stringify(response.user));
+      isRedirecting = false; // Reset redirect flag on successful login
     }
     
     return response;
