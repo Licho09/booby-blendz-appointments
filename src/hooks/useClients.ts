@@ -29,11 +29,14 @@ export function useClients() {
   const addClient = async (clientData: Omit<Client, 'id' | 'createdAt'>) => {
     try {
       setError(null);
+      console.log('useClients: Creating client with data:', clientData);
       const newClient = await clientsAPI.create(clientData);
+      console.log('useClients: Client created successfully:', newClient);
       setClients(prev => [...prev, newClient]);
       return { success: true, client: newClient };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to create client';
+      console.error('useClients: Client creation failed:', err);
       setError(errorMessage);
       return { success: false, error: errorMessage };
     }

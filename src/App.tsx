@@ -64,11 +64,16 @@ function App() {
           notes: ''
         };
         
+        console.log('Creating new client:', newClient);
         const clientResult = await addClient(newClient);
+        console.log('Client creation result:', clientResult);
+        
         if (clientResult.success) {
           clientId = clientResult.client.id;
+          console.log('Client created successfully with ID:', clientId);
         } else {
-          throw new Error('Failed to create client');
+          console.error('Client creation failed:', clientResult.error);
+          throw new Error(`Failed to create client: ${clientResult.error || 'Unknown error'}`);
         }
       } else {
         clientId = existingClient.id;
