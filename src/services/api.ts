@@ -14,6 +14,11 @@ const apiRequest = async (
   options: RequestInit = {},
   retries: number = 2
 ): Promise<any> => {
+  // Don't make API calls if we're on the login page to prevent loops
+  if (typeof window !== 'undefined' && window.location.pathname === '/') {
+    throw new Error('Not authenticated');
+  }
+  
   const token = getAuthToken();
   
   const config: RequestInit = {
@@ -43,8 +48,8 @@ const apiRequest = async (
       console.log('🔐 Authentication token expired, logging out...');
       authAPI.logout();
       
-      // Show a user-friendly message and redirect after a delay
-      if (typeof window !== 'undefined' && !isRedirecting) {
+      // Only redirect if we're not already on the login page and not already redirecting
+      if (typeof window !== 'undefined' && !isRedirecting && window.location.pathname !== '/') {
         isRedirecting = true;
         
         // Check if we're on mobile by looking at user agent
@@ -57,7 +62,7 @@ const apiRequest = async (
             window.location.href = '/';
           }, 1000);
         } else {
-          // On desktop, redirect immediately
+          // On desktop, redirect immediately but only if not on login page
           window.location.href = '/';
         }
       }
@@ -122,6 +127,8 @@ export const authAPI = {
     // Clear any cached data
     localStorage.removeItem('appointments');
     localStorage.removeItem('clients');
+    // Reset redirect flag when manually logging out
+    isRedirecting = false;
   },
 
   getCurrentUser: () => {
