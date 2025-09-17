@@ -73,9 +73,15 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
       }
       
       const appointmentData = {
-        ...formData,
         clientId,
-        title: formData.clientName // Use client name as title
+        clientName: formData.clientName, // Pass client name for client creation
+        title: formData.clientName, // Use client name as title
+        date: formData.date,
+        time: formData.time,
+        duration: formData.duration,
+        price: formData.price,
+        notes: formData.notes,
+        status: formData.status
       };
       
       console.log('Submitting appointment data:', appointmentData);
