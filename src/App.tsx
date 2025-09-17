@@ -148,7 +148,10 @@ function App() {
   };
 
   const handleLogout = () => {
-    logout();
+    const confirmed = window.confirm('Are you sure you want to log out?');
+    if (confirmed) {
+      logout();
+    }
   };
 
   // Show loading screen while checking authentication
