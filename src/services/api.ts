@@ -46,7 +46,7 @@ const apiRequest = async (
       // Only redirect if we're not already redirecting
       if (!isRedirecting) {
         isRedirecting = true;
-        window.location.href = '/';
+        window.location.replace('/');
       }
       
       throw new Error('Session expired. Please log in again.');
@@ -128,7 +128,8 @@ export const authAPI = {
       if (window.location.pathname !== '/' && window.location.pathname !== '/login' && !isRedirecting) {
         isRedirecting = true;
         authAPI.logout();
-        window.location.href = '/';
+        // Use replace instead of href to prevent back button issues
+        window.location.replace('/');
       }
       return false;
     }

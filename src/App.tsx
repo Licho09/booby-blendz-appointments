@@ -27,17 +27,8 @@ function App() {
   const { theme, toggleTheme } = useTheme();
   const { isAuthenticated, isLoading, login, signup, logout } = useAuth();
 
-  // Check for token expiration on app load and periodically
-  useEffect(() => {
-    if (isAuthenticated) {
-      // Check token expiration every 5 minutes
-      const interval = setInterval(() => {
-        authAPI.checkTokenExpiration();
-      }, 5 * 60 * 1000); // 5 minutes
-
-      return () => clearInterval(interval);
-    }
-  }, [isAuthenticated]);
+  // Token expiration is now handled automatically by API requests
+  // No need for periodic checks that cause reload loops
 
   // Test message to see if app is loading
   console.log('App is loading! Current view:', currentView);
