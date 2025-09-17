@@ -15,7 +15,9 @@ const apiRequest = async (
   retries: number = 2
 ): Promise<any> => {
   // Don't make API calls if we're on the login page to prevent loops
-  if (typeof window !== 'undefined' && window.location.pathname === '/') {
+  // BUT allow login and signup endpoints to work
+  if (typeof window !== 'undefined' && window.location.pathname === '/' && 
+      !endpoint.includes('/auth/login') && !endpoint.includes('/auth/signup')) {
     throw new Error('Not authenticated');
   }
   
