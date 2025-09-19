@@ -13,7 +13,7 @@ const MobileLoadingScreen: React.FC<MobileLoadingScreenProps> = ({ isVisible }) 
       <img 
         src="/Bobby_Blendz..png" 
         alt="Bobby Blendz" 
-        className="w-full h-full object-cover"
+        className="w-full h-full object-contain"
       />
       
       {/* Overlay with Loading Circles - Positioned at very bottom */}
