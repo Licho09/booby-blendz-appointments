@@ -16,8 +16,8 @@ const MobileLoadingScreen: React.FC<MobileLoadingScreenProps> = ({ isVisible }) 
         className="w-full h-full object-cover"
       />
       
-      {/* Overlay with Loading Circles */}
-      <div className="absolute inset-0 flex items-center justify-center">
+      {/* Overlay with Loading Circles - Positioned at very bottom */}
+      <div className="absolute inset-0 flex items-end justify-center pb-4">
         {/* 4 Loading Circles */}
         <div className="flex space-x-3">
           <div className="w-4 h-4 bg-white rounded-full animate-bounce"></div>
