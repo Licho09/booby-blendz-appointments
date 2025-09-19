@@ -308,14 +308,6 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
               {filter === 'completed' && 'Complete some appointments to see them here'}
               {filter === 'upcoming' && 'Schedule some future appointments to see them here'}
             </p>
-            {(filter === 'all' || filter === 'today' || filter === 'upcoming') && onCreateAppointment && (
-              <button
-                onClick={onCreateAppointment}
-                className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"
-              >
-                Create Appointment
-              </button>
-            )}
           </div>
         ) : (
           (() => {
