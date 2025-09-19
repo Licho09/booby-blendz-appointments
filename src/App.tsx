@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Clock, DollarSign, Plus, Moon, Sun, Instagram, LogOut, X } from 'lucide-react';
 import AppointmentList from './components/AppointmentList';
 import AppointmentForm from './components/AppointmentForm';
@@ -6,11 +6,11 @@ import ClientForm from './components/ClientForm';
 import EarningsView from './components/EarningsView';
 import Login from './components/Login';
 import Signup from './components/Signup';
-import { useAppointments } from './hooks/useAppointments';
-import { useClients } from './hooks/useClients';
+import MobileLoadingScreen from './components/MobileLoadingScreen';
+import { useAppData } from './hooks/useAppData';
 import { useTheme } from './hooks/useTheme';
 import { useAuth } from './hooks/useAuth';
-import { authAPI } from './services/api';
+import { useMobile } from './hooks/useMobile';
 import type { View } from './types';
 
 function App() {
@@ -23,16 +23,32 @@ function App() {
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
-  const { appointments, addAppointment, updateAppointment, deleteAppointment, isLoading: appointmentsLoading, error: appointmentsError, refreshAppointments } = useAppointments();
-  const { clients, addClient, updateClient, isLoading: clientsLoading } = useClients();
+  const { 
+    appointments, 
+    clients, 
+    isLoading: dataLoading, 
+    error: dataError, 
+    hasDataLoss,
+    refreshAll,
+    addAppointment, 
+    updateAppointment, 
+    deleteAppointment, 
+    addClient, 
+    updateClient 
+  } = useAppData();
   const { theme, toggleTheme } = useTheme();
   const { isAuthenticated, isLoading, login, signup, logout } = useAuth();
+  const isMobile = useMobile();
 
   // Token expiration is now handled automatically by API requests
   // No need for periodic checks that cause reload loops
 
   // Test message to see if app is loading
   console.log('App is loading! Current view:', currentView);
+  console.log('Mobile detection:', isMobile);
+  console.log('Auth loading:', isLoading);
+  console.log('Data loading:', dataLoading);
+  console.log('Should show mobile loading:', isMobile && (isLoading || dataLoading));
 
   // Function to handle view changes with scroll reset
   const handleViewChange = (newView: View) => {
@@ -193,11 +209,22 @@ function App() {
   }
 
   return (
-    <div className={`min-h-screen transition-colors duration-200 ${
-      theme === 'dark' 
-        ? 'bg-gray-900 text-white' 
-        : 'bg-gradient-to-br from-blue-50 via-white to-indigo-50 text-gray-900'
-    }`}>
+    <>
+      {/* Mobile Loading Screen - Only show on mobile when loading */}
+      <MobileLoadingScreen isVisible={isMobile && (isLoading || dataLoading)} />
+      
+      {/* TEMPORARY: Force show loading screen for testing - REMOVE AFTER TESTING */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="fixed top-4 right-4 z-50 bg-red-500 text-white p-2 rounded">
+          Mobile: {isMobile ? 'Yes' : 'No'} | Loading: {isLoading || dataLoading ? 'Yes' : 'No'}
+        </div>
+      )}
+      
+      <div className={`min-h-screen transition-colors duration-200 ${
+        theme === 'dark' 
+          ? 'bg-gray-900 text-white' 
+          : 'bg-gradient-to-br from-blue-50 via-white to-indigo-50 text-gray-900'
+      }`}>
       {/* Status Bar */}
       <div className={`flex items-center justify-between p-4 ${
         theme === 'dark' ? 'bg-gray-800' : 'bg-white'
@@ -239,6 +266,23 @@ function App() {
         </div>
       </div>
 
+      {/* Data Loss Recovery Indicator */}
+      {hasDataLoss && (
+        <div className={`mx-4 mt-4 p-3 rounded-lg border-l-4 border-yellow-500 ${
+          theme === 'dark' ? 'bg-yellow-900/20 text-yellow-200' : 'bg-yellow-50 text-yellow-800'
+        }`}>
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <div className="w-4 h-4 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm font-medium">Recovering data...</p>
+              <p className="text-xs">Please wait while we reload your appointments and clients.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main Content */}
       <div className="pb-20">
         {currentView === 'appointments' && (
@@ -269,9 +313,10 @@ function App() {
               }
             }}
             theme={theme}
-            isLoading={appointmentsLoading}
-            error={appointmentsError}
-            onRetry={refreshAppointments}
+            isLoading={dataLoading}
+            error={dataError}
+            onRetry={refreshAll}
+            onCreateAppointment={() => setShowAppointmentForm(true)}
           />
         )}
         
@@ -396,7 +441,8 @@ function App() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }
 

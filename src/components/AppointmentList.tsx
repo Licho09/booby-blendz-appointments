@@ -12,6 +12,8 @@ interface AppointmentListProps {
   isLoading?: boolean;
   error?: string | null;
   onRetry?: () => void;
+  initialFilter?: 'all' | 'today' | 'upcoming' | 'pending' | 'completed';
+  onCreateAppointment?: () => void;
 }
 
 const AppointmentList: React.FC<AppointmentListProps> = ({ 
@@ -20,10 +22,12 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
   onEdit, 
   onDelete, 
   onMarkComplete,
-  theme 
+  theme,
+  initialFilter = 'today',
+  onCreateAppointment
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [filter, setFilter] = useState<'all' | 'today' | 'upcoming' | 'pending' | 'completed'>('today');
+  const [filter, setFilter] = useState<'all' | 'today' | 'upcoming' | 'pending' | 'completed'>(initialFilter);
   const [completedFilter, setCompletedFilter] = useState<'today' | 'week' | 'month' | 'all'>('week');
   const [showPriceModal, setShowPriceModal] = useState(false);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<string>('');
@@ -110,10 +114,10 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
         return true;
     }
   }).sort((a, b) => {
-    // Sort by date and time from most recent to oldest (newest first)
+    // Sort by date and time chronologically
     const dateA = new Date(`${a.date}T${a.time}`);
     const dateB = new Date(`${b.date}T${b.time}`);
-    return dateB.getTime() - dateA.getTime();
+    return dateA.getTime() - dateB.getTime();
   });
 
   const getStatusColor = (status: string) => {
@@ -290,8 +294,28 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
             theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
           }`}>
             <Calendar className="w-12 h-12 mx-auto mb-4 opacity-50" />
-            <p className="text-lg font-medium mb-2">No appointments found</p>
-            <p className="text-sm">Try adjusting your search or filter criteria</p>
+            <p className="text-lg font-medium mb-2">
+              {filter === 'all' && 'No appointments yet'}
+              {filter === 'today' && 'No appointments today'}
+              {filter === 'pending' && 'No pending appointments'}
+              {filter === 'completed' && 'No completed appointments'}
+              {filter === 'upcoming' && 'No upcoming appointments'}
+            </p>
+            <p className="text-sm mb-4">
+              {filter === 'all' && 'Create your first appointment to get started'}
+              {filter === 'today' && 'You have no appointments scheduled for today'}
+              {filter === 'pending' && 'All your appointments are completed or scheduled'}
+              {filter === 'completed' && 'Complete some appointments to see them here'}
+              {filter === 'upcoming' && 'Schedule some future appointments to see them here'}
+            </p>
+            {(filter === 'all' || filter === 'today' || filter === 'upcoming') && onCreateAppointment && (
+              <button
+                onClick={onCreateAppointment}
+                className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+              >
+                Create Appointment
+              </button>
+            )}
           </div>
         ) : (
           (() => {

@@ -12,15 +12,53 @@ export function useClients() {
     loadClients();
   }, []);
 
+  // Add visibility change listener for mobile app resume
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && clients.length === 0) {
+        // If app becomes visible and no clients loaded, try to reload
+        loadClients();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [clients.length]);
+
+  // Add network status listener
+  useEffect(() => {
+    const handleOnline = () => {
+      if (clients.length === 0 || error) {
+        // If we're offline or have an error, try to reload when back online
+        loadClients();
+      }
+    };
+
+    window.addEventListener('online', handleOnline);
+    return () => window.removeEventListener('online', handleOnline);
+  }, [clients.length, error]);
+
   const loadClients = async () => {
     try {
       setIsLoading(true);
       setError(null);
-      const data = await clientsAPI.getAll();
+      
+      // Add a minimum loading time to prevent flickering on fast connections
+      const [data] = await Promise.all([
+        clientsAPI.getAll(),
+        new Promise(resolve => setTimeout(resolve, 300)) // Minimum 300ms loading
+      ]);
+      
       setClients(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load clients');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load clients';
+      setError(errorMessage);
       console.error('Failed to load clients:', err);
+      
+      // If it's a network error, show a more user-friendly message
+      if (errorMessage.includes('fetch') || errorMessage.includes('network')) {
+        setError('Unable to connect to the server. Please check your internet connection.');
+      }
     } finally {
       setIsLoading(false);
     }

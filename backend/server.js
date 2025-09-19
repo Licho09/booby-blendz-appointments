@@ -196,15 +196,21 @@ const sendDailyReminderSMS = async (appointmentsCount, appointmentsList = []) =>
     const today = new Date();
     const formattedDate = formatDate(today.toISOString().split('T')[0]);
     
-    let message = `You have ${appointmentsCount} appointment${appointmentsCount !== 1 ? 's' : ''} today.`;
+    let message;
     
-    // If there are appointments, list them (shorter format)
-    if (appointmentsList.length > 0) {
-      message += '\n\nToday:\n';
-      appointmentsList.forEach((appointment, index) => {
-        const formattedTime = formatTime(appointment.time);
-        message += `${index + 1}. ${appointment.clients.name} ${formattedTime}\n`;
-      });
+    if (appointmentsCount === 0) {
+      message = `You have no appointments today. Enjoy your free day!`;
+    } else {
+      message = `You have ${appointmentsCount} appointment${appointmentsCount !== 1 ? 's' : ''} today.`;
+      
+      // If there are appointments, list them (shorter format)
+      if (appointmentsList.length > 0) {
+        message += '\n\nToday:\n';
+        appointmentsList.forEach((appointment, index) => {
+          const formattedTime = formatTime(appointment.time);
+          message += `${index + 1}. ${appointment.clients.name} ${formattedTime}\n`;
+        });
+      }
     }
     
     // Split message into chunks
@@ -384,9 +390,13 @@ app.post('/api/send-daily-reminder', async (req, res) => {
     const reminderResult = await sendDailyReminderSMS(appointmentsCount, todaysAppointments);
     
     if (reminderResult.success) {
+      const statusMessage = appointmentsCount === 0 
+        ? "Daily reminder sent successfully! You have no appointments today."
+        : `Daily reminder sent successfully! Found ${appointmentsCount} appointment${appointmentsCount !== 1 ? 's' : ''} for today.`;
+      
       res.json({
         success: true,
-        message: `Daily reminder sent successfully! Found ${appointmentsCount} appointment${appointmentsCount !== 1 ? 's' : ''} for today.`,
+        message: statusMessage,
         appointmentsCount,
         messageId: reminderResult.messageId
       });
