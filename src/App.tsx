@@ -63,14 +63,9 @@ function App() {
       localStorage.setItem('app-has-loaded', 'true');
     }
     
-    // Show loading screen for 4 seconds on mobile
+    // Show loading screen on mobile - timing handled by MobileLoadingScreen component
     if (isMobile) {
       setShowLoadingScreen(true);
-      const timer = setTimeout(() => {
-        setShowLoadingScreen(false);
-      }, 4000);
-      
-      return () => clearTimeout(timer);
     }
   }, [isMobile]);
 
