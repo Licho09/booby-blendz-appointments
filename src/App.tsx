@@ -23,7 +23,7 @@ function App() {
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [isWarmLoad, setIsWarmLoad] = useState(false);
-  const [showLoadingScreen, setShowLoadingScreen] = useState(false);
+  const [showLoadingScreen, setShowLoadingScreen] = useState(true); // Show immediately on mobile
 
   const { 
     appointments, 
@@ -52,7 +52,7 @@ function App() {
   console.log('Data loading:', dataLoading);
   console.log('Should show mobile loading:', isMobile && (isLoading || dataLoading));
   
-  // Detect warm vs cold load and show loading screen for 4 seconds
+  // Detect warm vs cold load and handle loading screen timing
   useEffect(() => {
     // Check if app has been loaded before (warm load)
     const hasLoadedBefore = localStorage.getItem('app-has-loaded');
@@ -63,9 +63,17 @@ function App() {
       localStorage.setItem('app-has-loaded', 'true');
     }
     
-    // Show loading screen on mobile - timing handled by MobileLoadingScreen component
+    // Hide loading screen after appropriate time on mobile
     if (isMobile) {
-      setShowLoadingScreen(true);
+      const loadingDuration = hasLoadedBefore ? 3000 : 6000; // 3s warm, 6s cold
+      const timer = setTimeout(() => {
+        setShowLoadingScreen(false);
+      }, loadingDuration);
+      
+      return () => clearTimeout(timer);
+    } else {
+      // On desktop, hide immediately
+      setShowLoadingScreen(false);
     }
   }, [isMobile]);
 
