@@ -23,6 +23,7 @@ function App() {
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [isWarmLoad, setIsWarmLoad] = useState(false);
+  const [showLoadingScreen, setShowLoadingScreen] = useState(false);
 
   const { 
     appointments, 
@@ -51,7 +52,7 @@ function App() {
   console.log('Data loading:', dataLoading);
   console.log('Should show mobile loading:', isMobile && (isLoading || dataLoading));
   
-  // Detect warm vs cold load
+  // Detect warm vs cold load and show loading screen for 4 seconds
   useEffect(() => {
     // Check if app has been loaded before (warm load)
     const hasLoadedBefore = localStorage.getItem('app-has-loaded');
@@ -61,7 +62,17 @@ function App() {
     if (!hasLoadedBefore) {
       localStorage.setItem('app-has-loaded', 'true');
     }
-  }, []);
+    
+    // Show loading screen for 4 seconds on mobile
+    if (isMobile) {
+      setShowLoadingScreen(true);
+      const timer = setTimeout(() => {
+        setShowLoadingScreen(false);
+      }, 4000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isMobile]);
 
   // Function to handle view changes with scroll reset
   const handleViewChange = (newView: View) => {
@@ -225,7 +236,7 @@ function App() {
     <>
       {/* Mobile Loading Screen - Only show on mobile when loading */}
       <MobileLoadingScreen 
-        isVisible={isMobile && (isLoading || dataLoading)} 
+        isVisible={isMobile && showLoadingScreen} 
         isWarmLoad={isWarmLoad}
       />
       

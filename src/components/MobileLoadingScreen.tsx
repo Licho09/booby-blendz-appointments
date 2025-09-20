@@ -12,8 +12,8 @@ const MobileLoadingScreen: React.FC<MobileLoadingScreenProps> = ({ isVisible, is
     if (isVisible) {
       setShouldShow(true);
       
-      // Set loading duration based on warm/cold load
-      const loadingDuration = isWarmLoad ? 3000 : 6000; // 3s for warm, 6s for cold
+      // Set loading duration - always 4 seconds
+      const loadingDuration = 4000; // 4 seconds for all loads
       
       const timer = setTimeout(() => {
         setShouldShow(false);
