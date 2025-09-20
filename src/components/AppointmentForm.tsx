@@ -258,13 +258,14 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
             <div className="space-y-2">
               <label className="block text-sm font-medium">Price ($)</label>
               <input
-                type="text"
+                type="number"
                 name="price"
                 value={formData.price}
                 onChange={handleChange}
                 placeholder="0.00"
-                inputMode="numeric"
+                inputMode="decimal"
                 pattern="[0-9]*"
+                step="0.01"
                 autoComplete="off"
                 autoCapitalize="off"
                 autoCorrect="off"
