@@ -39,7 +39,7 @@ const MobileLoadingScreen: React.FC<MobileLoadingScreenProps> = ({ isVisible, is
          }}>
       {/* Full Screen Bobby Blendz Image */}
       <img 
-        src="/Bobby_Blendz..png" 
+        src="/Bobby_Blendz. (1).png" 
         alt="Bobby Blendz" 
         className="w-full h-full object-contain object-center"
         style={{ width: '100vw', height: '120vh', objectFit: 'contain' }}
