@@ -1,11 +1,31 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface MobileLoadingScreenProps {
   isVisible: boolean;
+  isWarmLoad?: boolean; // Whether this is a warm load (app already loaded before)
 }
 
-const MobileLoadingScreen: React.FC<MobileLoadingScreenProps> = ({ isVisible }) => {
-  if (!isVisible) return null;
+const MobileLoadingScreen: React.FC<MobileLoadingScreenProps> = ({ isVisible, isWarmLoad = false }) => {
+  const [shouldShow, setShouldShow] = useState(false);
+  
+  useEffect(() => {
+    if (isVisible) {
+      setShouldShow(true);
+      
+      // Set loading duration based on warm/cold load
+      const loadingDuration = isWarmLoad ? 3000 : 6000; // 3s for warm, 6s for cold
+      
+      const timer = setTimeout(() => {
+        setShouldShow(false);
+      }, loadingDuration);
+      
+      return () => clearTimeout(timer);
+    } else {
+      setShouldShow(false);
+    }
+  }, [isVisible, isWarmLoad]);
+  
+  if (!shouldShow) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white dark:bg-gray-900">

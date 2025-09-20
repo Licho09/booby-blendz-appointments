@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Clock, DollarSign, Plus, Moon, Sun, Instagram, LogOut, X } from 'lucide-react';
 import AppointmentList from './components/AppointmentList';
 import AppointmentForm from './components/AppointmentForm';
@@ -22,6 +22,7 @@ function App() {
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null);
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [isWarmLoad, setIsWarmLoad] = useState(false);
 
   const { 
     appointments, 
@@ -49,6 +50,18 @@ function App() {
   console.log('Auth loading:', isLoading);
   console.log('Data loading:', dataLoading);
   console.log('Should show mobile loading:', isMobile && (isLoading || dataLoading));
+  
+  // Detect warm vs cold load
+  useEffect(() => {
+    // Check if app has been loaded before (warm load)
+    const hasLoadedBefore = localStorage.getItem('app-has-loaded');
+    setIsWarmLoad(!!hasLoadedBefore);
+    
+    // Mark that app has loaded
+    if (!hasLoadedBefore) {
+      localStorage.setItem('app-has-loaded', 'true');
+    }
+  }, []);
 
   // Function to handle view changes with scroll reset
   const handleViewChange = (newView: View) => {
@@ -211,7 +224,10 @@ function App() {
   return (
     <>
       {/* Mobile Loading Screen - Only show on mobile when loading */}
-      <MobileLoadingScreen isVisible={isMobile && (isLoading || dataLoading)} />
+      <MobileLoadingScreen 
+        isVisible={isMobile && (isLoading || dataLoading)} 
+        isWarmLoad={isWarmLoad}
+      />
       
       {/* TEMPORARY: Force show loading screen for testing - REMOVE AFTER TESTING */}
       {process.env.NODE_ENV === 'development' && (
