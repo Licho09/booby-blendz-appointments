@@ -50,9 +50,10 @@ function App() {
   console.log('Mobile detection:', isMobile);
   console.log('Auth loading:', isLoading);
   console.log('Data loading:', dataLoading);
-  console.log('Should show mobile loading:', isMobile && (isLoading || dataLoading));
+  console.log('Show loading screen:', showLoadingScreen);
+  console.log('Should show mobile loading:', isMobile && showLoadingScreen);
   
-  // Detect warm vs cold load and handle loading screen timing
+  // Detect warm vs cold load
   useEffect(() => {
     // Check if app has been loaded before (warm load)
     const hasLoadedBefore = localStorage.getItem('app-has-loaded');
@@ -62,10 +63,14 @@ function App() {
     if (!hasLoadedBefore) {
       localStorage.setItem('app-has-loaded', 'true');
     }
-    
-    // Hide loading screen after appropriate time on mobile
+  }, []);
+
+  // Handle loading screen timing on mobile
+  useEffect(() => {
     if (isMobile) {
+      const hasLoadedBefore = localStorage.getItem('app-has-loaded');
       const loadingDuration = hasLoadedBefore ? 3000 : 6000; // 3s warm, 6s cold
+      
       const timer = setTimeout(() => {
         setShowLoadingScreen(false);
       }, loadingDuration);
@@ -242,6 +247,15 @@ function App() {
         isVisible={isMobile && showLoadingScreen} 
         isWarmLoad={isWarmLoad}
       />
+      
+      {/* TEMPORARY DEBUG - REMOVE AFTER FIXING */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="fixed top-4 right-4 z-50 bg-blue-500 text-white p-2 rounded text-xs">
+          Mobile: {isMobile ? 'Yes' : 'No'}<br/>
+          Loading: {showLoadingScreen ? 'Yes' : 'No'}<br/>
+          Visible: {isMobile && showLoadingScreen ? 'Yes' : 'No'}
+        </div>
+      )}
       
       
       <div className={`min-h-screen transition-colors duration-200 ${
