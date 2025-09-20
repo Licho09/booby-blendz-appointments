@@ -855,12 +855,16 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                     $
                   </div>
                   <input
-                    type="number"
+                    type="text"
                     value={priceInput}
                     onChange={(e) => setPriceInput(e.target.value)}
                     placeholder="0.00"
-                    min="0"
-                    step="0.01"
+                    inputMode="decimal"
+                    pattern="[0-9]*"
+                    autoComplete="off"
+                    autoCapitalize="off"
+                    autoCorrect="off"
+                    spellCheck="false"
                     className={`w-full pl-12 pr-4 py-4 text-3xl font-bold text-center rounded-lg border transition-colors ${
                       theme === 'dark' 
                         ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500' 
