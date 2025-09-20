@@ -258,15 +258,14 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
             <div className="space-y-2">
               <label className="block text-sm font-medium">Price ($)</label>
               <input
-                type="number"
+                type="tel"
                 name="price"
                 value={formData.price}
                 onChange={handleChange}
                 placeholder="0.00"
-                min="0"
-                step="0.01"
-                inputMode="tel"
+                inputMode="numeric"
                 pattern="[0-9]*"
+                autoComplete="off"
                 required
                 className={`w-full px-3 py-2 rounded-lg border transition-colors ${
                   theme === 'dark' 
