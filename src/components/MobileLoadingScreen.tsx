@@ -28,13 +28,21 @@ const MobileLoadingScreen: React.FC<MobileLoadingScreenProps> = ({ isVisible, is
   if (!shouldShow) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white dark:bg-gray-900" style={{ height: '100vh', width: '100vw' }}>
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white dark:bg-gray-900" 
+         style={{ 
+           height: '100vh', 
+           width: '100vw',
+           paddingTop: 'env(safe-area-inset-top)',
+           paddingLeft: 'env(safe-area-inset-left)',
+           paddingRight: 'env(safe-area-inset-right)',
+           paddingBottom: 'env(safe-area-inset-bottom)'
+         }}>
       {/* Full Screen Bobby Blendz Image */}
       <img 
         src="/Bobby_Blendz..png" 
         alt="Bobby Blendz" 
-        className="w-full h-full object-cover object-center"
-        style={{ width: '100vw', height: '100vh', objectFit: 'cover' }}
+        className="w-full h-full object-contain object-center"
+        style={{ width: '100vw', height: '120vh', objectFit: 'contain' }}
       />
       
       {/* Overlay with Loading Circles - Positioned below center text */}
