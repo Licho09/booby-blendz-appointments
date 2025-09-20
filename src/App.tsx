@@ -23,7 +23,7 @@ function App() {
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [isWarmLoad, setIsWarmLoad] = useState(false);
-  const [showLoadingScreen, setShowLoadingScreen] = useState(true); // Show immediately on mobile
+  const [showLoadingScreen, setShowLoadingScreen] = useState(false); // Start with false, then show on mobile
 
   const { 
     appointments, 
@@ -53,22 +53,22 @@ function App() {
   console.log('Show loading screen:', showLoadingScreen);
   console.log('Should show mobile loading:', isMobile && showLoadingScreen);
   
-  // Detect warm vs cold load
-  useEffect(() => {
-    // Check if app has been loaded before (warm load)
-    const hasLoadedBefore = localStorage.getItem('app-has-loaded');
-    setIsWarmLoad(!!hasLoadedBefore);
-    
-    // Mark that app has loaded
-    if (!hasLoadedBefore) {
-      localStorage.setItem('app-has-loaded', 'true');
-    }
-  }, []);
-
-  // Handle loading screen timing on mobile
+  // Show loading screen on mobile PWA
   useEffect(() => {
     if (isMobile) {
+      // Always show loading screen on mobile
+      setShowLoadingScreen(true);
+      
+      // Check if app has been loaded before (warm load)
       const hasLoadedBefore = localStorage.getItem('app-has-loaded');
+      setIsWarmLoad(!!hasLoadedBefore);
+      
+      // Mark that app has loaded
+      if (!hasLoadedBefore) {
+        localStorage.setItem('app-has-loaded', 'true');
+      }
+      
+      // Set loading duration based on warm/cold load
       const loadingDuration = hasLoadedBefore ? 3000 : 6000; // 3s warm, 6s cold
       
       const timer = setTimeout(() => {
@@ -77,7 +77,7 @@ function App() {
       
       return () => clearTimeout(timer);
     } else {
-      // On desktop, hide immediately
+      // On desktop, no loading screen
       setShowLoadingScreen(false);
     }
   }, [isMobile]);
