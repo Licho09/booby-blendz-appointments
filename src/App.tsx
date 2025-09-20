@@ -243,12 +243,6 @@ function App() {
         isWarmLoad={isWarmLoad}
       />
       
-      {/* TEMPORARY: Force show loading screen for testing - REMOVE AFTER TESTING */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="fixed top-4 right-4 z-50 bg-red-500 text-white p-2 rounded">
-          Mobile: {isMobile ? 'Yes' : 'No'} | Loading: {isLoading || dataLoading ? 'Yes' : 'No'}
-        </div>
-      )}
       
       <div className={`min-h-screen transition-colors duration-200 ${
         theme === 'dark' 
