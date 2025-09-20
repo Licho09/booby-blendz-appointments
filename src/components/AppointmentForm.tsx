@@ -265,7 +265,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
                 placeholder="0.00"
                 min="0"
                 step="0.01"
-                inputMode="decimal"
+                inputMode="tel"
                 pattern="[0-9]*"
                 required
                 className={`w-full px-3 py-2 rounded-lg border transition-colors ${
