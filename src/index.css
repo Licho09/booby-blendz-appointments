@@ -42,9 +42,6 @@ html, body, #root {
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
   padding-bottom: env(safe-area-inset-bottom);
-  
-  /* Ensure background extends behind notch */
-  background: inherit;
 }
 
 /* Ensure the app container fills the full screen */

@@ -263,14 +263,13 @@ function App() {
           ? 'bg-gray-900 text-white' 
           : 'bg-gradient-to-br from-blue-50 via-white to-indigo-50 text-gray-900'
       }`} style={{ 
-        paddingTop: 'env(safe-area-inset-top)',
         minHeight: '100vh',
         minHeight: '100dvh'
       }}>
       {/* Status Bar */}
       <div className={`flex items-center justify-between p-4 ${
         theme === 'dark' ? 'bg-gray-800' : 'bg-white'
-      } border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+      } border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`} style={{ paddingTop: `calc(1rem + env(safe-area-inset-top))` }}>
         <div className="flex items-center space-x-4">
           <Instagram className="w-8 h-8 text-white" />
         </div>
