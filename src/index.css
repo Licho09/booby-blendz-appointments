@@ -15,8 +15,8 @@
 /* Ensure scrolling still works */
 html, body {
   overflow-x: hidden;
-  /* Ensure background extends behind notch */
-  background-color: #f8fafc; /* Default light background */
+  /* Ensure background extends behind notch - matches status bar */
+  background-color: white; /* Light mode: white (matches status bar) */
 }
 
 body {
@@ -24,10 +24,10 @@ body {
   overflow-x: hidden;
 }
 
-/* Dark mode background for html/body */
+/* Dark mode background for html/body - matches status bar */
 @media (prefers-color-scheme: dark) {
   html, body {
-    background-color: #111827; /* Dark background */
+    background-color: #1f2937; /* Dark mode: gray-800 (matches status bar) */
   }
 }
 
