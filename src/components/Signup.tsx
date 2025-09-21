@@ -53,7 +53,7 @@ const Signup: React.FC<SignupProps> = ({ onSignup, onSwitchToLogin, isLoading = 
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-blue-50 via-white to-indigo-50 relative overflow-hidden" style={{ minHeight: '100vh', minHeight: '100dvh' }}>
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 relative overflow-hidden" style={{ minHeight: '100vh', minHeight: '100dvh' }}>
       {/* Background decorative shapes */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
