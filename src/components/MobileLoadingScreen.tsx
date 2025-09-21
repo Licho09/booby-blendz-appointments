@@ -16,7 +16,7 @@ const MobileLoadingScreen: React.FC<MobileLoadingScreenProps> = ({ isVisible, is
   if (!shouldShow) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white dark:bg-gray-900" 
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:bg-gray-900" 
          style={{ 
            height: '100vh', 
            width: '100vw',
