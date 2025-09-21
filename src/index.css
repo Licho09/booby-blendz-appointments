@@ -15,11 +15,20 @@
 /* Ensure scrolling still works */
 html, body {
   overflow-x: hidden;
+  /* Ensure background extends behind notch */
+  background-color: #f8fafc; /* Default light background */
 }
 
 body {
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+/* Dark mode background for html/body */
+@media (prefers-color-scheme: dark) {
+  html, body {
+    background-color: #111827; /* Dark background */
+  }
 }
 
 /* True fullscreen on iPhone - edge-to-edge behind notch */
@@ -33,6 +42,9 @@ html, body, #root {
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
   padding-bottom: env(safe-area-inset-bottom);
+  
+  /* Ensure background extends behind notch */
+  background: inherit;
 }
 
 /* Ensure the app container fills the full screen */

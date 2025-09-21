@@ -262,7 +262,11 @@ function App() {
         theme === 'dark' 
           ? 'bg-gray-900 text-white' 
           : 'bg-gradient-to-br from-blue-50 via-white to-indigo-50 text-gray-900'
-      }`} style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+      }`} style={{ 
+        paddingTop: 'env(safe-area-inset-top)',
+        minHeight: '100vh',
+        minHeight: '100dvh'
+      }}>
       {/* Status Bar */}
       <div className={`flex items-center justify-between p-4 ${
         theme === 'dark' ? 'bg-gray-800' : 'bg-white'
