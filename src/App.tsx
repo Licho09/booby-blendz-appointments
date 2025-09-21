@@ -69,7 +69,7 @@ function App() {
       }
       
       // Set loading duration based on warm/cold load
-      const loadingDuration = hasLoadedBefore ? 3000 : 6000; // 3s warm, 6s cold
+      const loadingDuration = hasLoadedBefore ? 4000 : 6000; // 4s warm, 6s cold
       
       const timer = setTimeout(() => {
         setShowLoadingScreen(false);
