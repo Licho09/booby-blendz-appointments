@@ -16,13 +16,18 @@ const MobileLoadingScreen: React.FC<MobileLoadingScreenProps> = ({ isVisible, is
   if (!shouldShow) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center" 
+    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center" 
          style={{ 
            backgroundColor: '#5170ff',
            height: '100vh', 
            width: '100vw',
            minHeight: '100vh',
-           minHeight: '100dvh'
+           minHeight: '100dvh',
+           position: 'fixed',
+           top: 0,
+           left: 0,
+           right: 0,
+           bottom: 0
          }}>
       {/* Full Screen Bobby Blendz Image */}
       <img 
