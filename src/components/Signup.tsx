@@ -18,13 +18,16 @@ const Signup: React.FC<SignupProps> = ({ onSignup, onSwitchToLogin, isLoading = 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    // Add login-screen class to body for notch background (same as login)
+    // Add login-screen class to both body and html for notch background (same as login)
     document.body.classList.add('login-screen');
     document.body.classList.remove('main-app', 'loading-screen');
+    document.documentElement.classList.add('login-screen');
+    document.documentElement.classList.remove('main-app', 'loading-screen');
     
     return () => {
       // Clean up on unmount
       document.body.classList.remove('login-screen');
+      document.documentElement.classList.remove('login-screen');
     };
   }, []);
 

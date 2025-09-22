@@ -15,13 +15,16 @@ const Login: React.FC<LoginProps> = ({ onLogin, onSwitchToSignup, isLoading = fa
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
-    // Add login-screen class to body for notch background
+    // Add login-screen class to both body and html for notch background
     document.body.classList.add('login-screen');
     document.body.classList.remove('main-app', 'loading-screen');
+    document.documentElement.classList.add('login-screen');
+    document.documentElement.classList.remove('main-app', 'loading-screen');
     
     return () => {
       // Clean up on unmount
       document.body.classList.remove('login-screen');
+      document.documentElement.classList.remove('login-screen');
     };
   }, []);
 

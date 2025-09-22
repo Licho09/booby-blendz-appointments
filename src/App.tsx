@@ -47,12 +47,16 @@ function App() {
     if (isAuthenticated) {
       document.body.classList.add('main-app');
       document.body.classList.remove('login-screen', 'loading-screen');
+      document.documentElement.classList.add('main-app');
+      document.documentElement.classList.remove('login-screen', 'loading-screen');
       
       // Set notch background color based on theme
       if (theme === 'dark') {
         document.body.style.backgroundColor = '#1f2937'; // Gray-800 for dark mode
+        document.documentElement.style.backgroundColor = '#1f2937';
       } else {
         document.body.style.backgroundColor = 'white'; // White for light mode
+        document.documentElement.style.backgroundColor = 'white';
       }
     }
   }, [isAuthenticated, theme]);
