@@ -269,7 +269,7 @@ function App() {
       <div className={`min-h-screen transition-colors duration-200 main-app ${
         theme === 'dark' 
           ? 'bg-gray-900 text-white' 
-          : 'bg-gradient-to-br from-blue-50 via-white to-indigo-50 text-gray-900'
+          : 'bg-blue-900 text-white'
       }`} style={{ 
         minHeight: '100vh',
         minHeight: '100dvh'
