@@ -50,18 +50,14 @@ function App() {
       document.documentElement.classList.add('main-app');
       document.documentElement.classList.remove('login-screen', 'loading-screen');
       
-      // Add theme class to body for CSS targeting
+      // Set notch background color directly based on theme
       if (theme === 'dark') {
-        document.body.classList.add('dark-theme');
-        document.body.classList.remove('light-theme');
+        document.body.style.backgroundColor = '#1f2937'; // Gray-800 for dark mode
+        document.documentElement.style.backgroundColor = '#1f2937';
       } else {
-        document.body.classList.add('light-theme');
-        document.body.classList.remove('dark-theme');
+        document.body.style.backgroundColor = 'white'; // White for light mode
+        document.documentElement.style.backgroundColor = 'white';
       }
-      
-      // Remove any inline styles to let CSS classes take precedence
-      document.body.style.backgroundColor = '';
-      document.documentElement.style.backgroundColor = '';
     }
   }, [isAuthenticated, theme]);
 
