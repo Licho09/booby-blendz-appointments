@@ -52,7 +52,7 @@ function App() {
       if (theme === 'dark') {
         document.body.style.backgroundColor = '#1f2937'; // Gray-800 for dark mode
       } else {
-        document.body.style.backgroundColor = '#2563eb'; // Blue-600 for light mode
+        document.body.style.backgroundColor = 'white'; // White for light mode
       }
     }
   }, [isAuthenticated, theme]);
@@ -276,7 +276,7 @@ function App() {
       <div className={`min-h-screen transition-colors duration-200 main-app ${
         theme === 'dark' 
           ? 'bg-gray-900 text-white' 
-          : 'bg-blue-900 text-white'
+          : 'bg-gradient-to-br from-blue-50 via-white to-indigo-50 text-gray-900'
       }`} style={{ 
         minHeight: '100vh',
         minHeight: '100dvh'
