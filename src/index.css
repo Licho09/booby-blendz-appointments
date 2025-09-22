@@ -30,17 +30,7 @@ body {
   background: linear-gradient(135deg, #22d3ee 0%, #3b82f6 50%, #9333ea 100%) !important;
 }
 
-/* Light mode - white notch background */
-.main-app.light-theme body,
-.main-app.light-theme html {
-  background-color: white !important;
-}
-
-/* Dark mode - gray notch background */
-.main-app.dark-theme body,
-.main-app.dark-theme html {
-  background-color: #1f2937 !important; /* Gray-800 to match dark status bar */
-}
+/* Main app notch background - handled by JavaScript inline styles */
 
 .loading-screen body,
 .loading-screen html {

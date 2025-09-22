@@ -52,11 +52,11 @@ function App() {
       
       // Set notch background color directly based on theme
       if (theme === 'dark') {
-        document.body.style.backgroundColor = '#1f2937'; // Gray-800 for dark mode
-        document.documentElement.style.backgroundColor = '#1f2937';
+        document.body.style.setProperty('background-color', '#1f2937', 'important'); // Gray-800 for dark mode
+        document.documentElement.style.setProperty('background-color', '#1f2937', 'important');
       } else {
-        document.body.style.backgroundColor = 'white'; // White for light mode
-        document.documentElement.style.backgroundColor = 'white';
+        document.body.style.setProperty('background-color', 'white', 'important'); // White for light mode
+        document.documentElement.style.setProperty('background-color', 'white', 'important');
       }
     }
   }, [isAuthenticated, theme]);
