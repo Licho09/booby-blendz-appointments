@@ -283,10 +283,10 @@ function App() {
       }}>
       {/* Status Bar */}
       <div className={`flex items-center justify-between p-4 ${
-        theme === 'dark' ? 'bg-gray-800' : 'bg-blue-600'
-      } border-b ${theme === 'dark' ? 'border-gray-700' : 'border-blue-500'}`} style={{ paddingTop: `calc(1rem + env(safe-area-inset-top))` }}>
+        theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+      } border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`} style={{ paddingTop: `calc(1rem + env(safe-area-inset-top))` }}>
         <div className="flex items-center space-x-4">
-          <Instagram className="w-8 h-8 text-white" />
+          <Instagram className={`w-8 h-8 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`} />
         </div>
         
         <div className="flex-1 flex justify-center">

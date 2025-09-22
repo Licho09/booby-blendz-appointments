@@ -11,6 +11,18 @@ const MobileLoadingScreen: React.FC<MobileLoadingScreenProps> = ({ isVisible, is
   useEffect(() => {
     // Simply show/hide based on visibility - timing handled by parent
     setShouldShow(isVisible);
+    
+    // Set body class for notch background when loading screen is visible
+    if (isVisible) {
+      document.body.classList.add('loading-screen');
+      document.body.classList.remove('main-app', 'login-screen');
+    } else {
+      document.body.classList.remove('loading-screen');
+    }
+    
+    return () => {
+      document.body.classList.remove('loading-screen');
+    };
   }, [isVisible]);
   
   if (!shouldShow) return null;
