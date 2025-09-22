@@ -15,8 +15,8 @@
 /* Ensure scrolling still works */
 html, body {
   overflow-x: hidden;
-  /* Ensure background extends behind notch - matches status bar */
-  background-color: white; /* Light mode: white (matches status bar) */
+  /* Default background - will be overridden by specific screens */
+  background-color: white;
 }
 
 body {
@@ -24,9 +24,19 @@ body {
   overflow-x: hidden;
 }
 
-/* Dark mode background for html/body - matches status bar */
+/* Login/Signup screen background - gradient behind notch */
+.login-screen {
+  background: linear-gradient(135deg, #22d3ee 0%, #3b82f6 50%, #9333ea 100%);
+}
+
+/* Main app background - matches status bar behind notch */
+.main-app {
+  background-color: white;
+}
+
+/* Dark mode backgrounds */
 @media (prefers-color-scheme: dark) {
-  html, body {
+  .main-app {
     background-color: #1f2937; /* Dark mode: gray-800 (matches status bar) */
   }
 }
