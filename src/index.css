@@ -32,7 +32,7 @@ body {
 
 .main-app body,
 .main-app html {
-  background-color: white !important;
+  background-color: #2563eb !important; /* Blue-600 to match status bar */
 }
 
 .loading-screen body,
