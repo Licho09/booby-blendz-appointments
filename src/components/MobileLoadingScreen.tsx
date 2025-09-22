@@ -22,10 +22,7 @@ const MobileLoadingScreen: React.FC<MobileLoadingScreenProps> = ({ isVisible, is
            height: '100vh', 
            width: '100vw',
            minHeight: '100vh',
-           minHeight: '100dvh',
-           paddingLeft: 'env(safe-area-inset-left)',
-           paddingRight: 'env(safe-area-inset-right)',
-           paddingBottom: 'env(safe-area-inset-bottom)'
+           minHeight: '100dvh'
          }}>
       {/* Full Screen Bobby Blendz Image */}
       <img 
