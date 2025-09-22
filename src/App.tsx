@@ -42,6 +42,14 @@ function App() {
   const { isAuthenticated, isLoading, login, signup, logout } = useAuth();
   const isMobile = useMobile();
 
+  // Set body class for notch background
+  useEffect(() => {
+    if (isAuthenticated) {
+      document.body.classList.add('main-app');
+      document.body.classList.remove('login-screen', 'loading-screen');
+    }
+  }, [isAuthenticated]);
+
   // Token expiration is now handled automatically by API requests
   // No need for periodic checks that cause reload loops
 

@@ -24,20 +24,27 @@ body {
   overflow-x: hidden;
 }
 
-/* Login/Signup screen background - gradient behind notch */
-.login-screen {
-  background: linear-gradient(135deg, #22d3ee 0%, #3b82f6 50%, #9333ea 100%);
+/* Dynamic background classes for notch area */
+.login-screen body,
+.login-screen html {
+  background: linear-gradient(135deg, #22d3ee 0%, #3b82f6 50%, #9333ea 100%) !important;
 }
 
-/* Main app background - matches status bar behind notch */
-.main-app {
-  background-color: white;
+.main-app body,
+.main-app html {
+  background-color: white !important;
+}
+
+.loading-screen body,
+.loading-screen html {
+  background-color: #5170ff !important;
 }
 
 /* Dark mode backgrounds */
 @media (prefers-color-scheme: dark) {
-  .main-app {
-    background-color: #1f2937; /* Dark mode: gray-800 (matches status bar) */
+  .main-app body,
+  .main-app html {
+    background-color: #1f2937 !important; /* Dark mode: gray-800 (matches status bar) */
   }
 }
 

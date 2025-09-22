@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 
 interface LoginProps {
@@ -13,6 +13,17 @@ const Login: React.FC<LoginProps> = ({ onLogin, onSwitchToSignup, isLoading = fa
     password: ''
   });
   const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    // Add login-screen class to body for notch background
+    document.body.classList.add('login-screen');
+    document.body.classList.remove('main-app', 'loading-screen');
+    
+    return () => {
+      // Clean up on unmount
+      document.body.classList.remove('login-screen');
+    };
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
