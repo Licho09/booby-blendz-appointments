@@ -33,8 +33,8 @@ const MobileLoadingScreen: React.FC<MobileLoadingScreenProps> = ({ isVisible, is
       <img 
         src="/Agregar un título.png" 
         alt="Bobby Blendz" 
-        className="w-full h-full object-contain object-center"
-        style={{ width: '100vw', height: '120vh', objectFit: 'contain' }}
+        className="w-full h-full object-cover object-center"
+        style={{ width: '100vw', height: '100vh', objectFit: 'cover' }}
       />
       
       {/* Overlay with Loading Circles - Positioned below center text */}
