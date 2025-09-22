@@ -47,8 +47,15 @@ function App() {
     if (isAuthenticated) {
       document.body.classList.add('main-app');
       document.body.classList.remove('login-screen', 'loading-screen');
+      
+      // Set notch background color based on theme
+      if (theme === 'dark') {
+        document.body.style.backgroundColor = '#1f2937'; // Gray-800 for dark mode
+      } else {
+        document.body.style.backgroundColor = '#2563eb'; // Blue-600 for light mode
+      }
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, theme]);
 
   // Token expiration is now handled automatically by API requests
   // No need for periodic checks that cause reload loops

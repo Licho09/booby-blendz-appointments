@@ -32,7 +32,15 @@ body {
 
 .main-app body,
 .main-app html {
-  background-color: #2563eb !important; /* Blue-600 to match status bar */
+  background-color: #2563eb !important; /* Blue-600 to match status bar in light mode */
+}
+
+/* Dark mode - notch should match dark status bar */
+@media (prefers-color-scheme: dark) {
+  .main-app body,
+  .main-app html {
+    background-color: #1f2937 !important; /* Gray-800 to match dark status bar */
+  }
 }
 
 .loading-screen body,
