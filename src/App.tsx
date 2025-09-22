@@ -45,6 +45,11 @@ function App() {
   // Set body class for notch background
   useEffect(() => {
     if (isAuthenticated) {
+      // Don't override if loading screen is visible
+      if (showLoadingScreen) {
+        return;
+      }
+      
       document.body.classList.add('main-app');
       document.body.classList.remove('login-screen', 'loading-screen');
       document.documentElement.classList.add('main-app');
@@ -59,7 +64,7 @@ function App() {
         document.documentElement.style.setProperty('background-color', 'white', 'important');
       }
     }
-  }, [isAuthenticated, theme]);
+  }, [isAuthenticated, theme, showLoadingScreen]);
 
   // Token expiration is now handled automatically by API requests
   // No need for periodic checks that cause reload loops
