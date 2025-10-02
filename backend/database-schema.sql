@@ -51,14 +51,18 @@ CREATE INDEX idx_appointments_date ON appointments(date);
 CREATE INDEX idx_appointments_status ON appointments(status);
 CREATE INDEX idx_appointments_client_id ON appointments(client_id);
 
--- Create updated_at trigger function
+-- Create updated_at trigger function with secure search_path
 CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER 
+SECURITY DEFINER
+SET search_path = public
+LANGUAGE plpgsql
+AS $$
 BEGIN
     NEW.updated_at = NOW();
     RETURN NEW;
 END;
-$$ language 'plpgsql';
+$$;
 
 -- Add updated_at triggers
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
@@ -112,3 +116,9 @@ GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO anon, authenticated;
 
 -- Grant permissions for the earnings view
 GRANT SELECT ON public.earnings_summary TO anon, authenticated;
+
+-- Grant permissions for trigger function
+GRANT EXECUTE ON FUNCTION public.update_updated_at_column() TO anon, authenticated;
+
+-- Add security comment
+COMMENT ON FUNCTION public.update_updated_at_column() IS 'Secure trigger function with fixed search_path to prevent SQL injection';
