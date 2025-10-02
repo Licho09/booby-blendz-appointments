@@ -332,7 +332,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
               }`}
             >
               <div className="flex items-center space-x-2">
-                <span>Old Pending</span>
+                <span>Past Due</span>
                 <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
                 <span className="text-xs bg-red-500 text-white px-1.5 py-0.5 rounded-full">
                   {getOldPendingAppointments().length}
@@ -342,7 +342,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
           )}
 
           {[
-            { key: 'pending', label: 'Pending' },
+            { key: 'pending', label: 'Upcoming' },
             { key: 'completed', label: 'Completed' }
           ].map((filterOption) => (
             <button
@@ -413,7 +413,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
       {process.env.NODE_ENV === 'development' && (
         <div className="mb-4 p-3 bg-yellow-100 border border-yellow-400 rounded text-sm">
           <strong>Debug Info:</strong><br/>
-          Old Pending Count: {getOldPendingAppointments().length}<br/>
+          Past Due Count: {getOldPendingAppointments().length}<br/>
           Button Should Show: {getOldPendingAppointments().length > 0 ? 'YES' : 'NO'}<br/>
           Section Should Show: {showOldAppointmentsSection && getOldPendingAppointments().length > 0 ? 'YES' : 'NO'}
         </div>
@@ -428,7 +428,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center space-x-2">
                 <div className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
-                <h3 className="text-lg font-semibold">Completed but Not Marked Done</h3>
+                <h3 className="text-lg font-semibold">Past Due Appointments</h3>
                 <span className="text-sm bg-orange-200 text-orange-800 px-2 py-1 rounded-full">
                   {getOldPendingAppointments().length}
                 </span>
@@ -457,8 +457,8 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
               </div>
             </div>
             <p className="text-sm mb-3">
-              These appointments were completed (have prices set) but are still marked as pending. 
-              Mark them as done to move them to your completed appointments.
+              These appointments are past their scheduled date but still marked as pending. 
+              Select the ones that were actually completed and mark them as done.
             </p>
             
             <div className="space-y-2">
