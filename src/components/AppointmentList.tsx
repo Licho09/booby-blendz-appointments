@@ -266,9 +266,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
         <div className="flex space-x-2 overflow-x-auto">
           {[
             { key: 'all', label: 'All' },
-            { key: 'today', label: 'Today' },
-            { key: 'pending', label: 'Pending' },
-            { key: 'completed', label: 'Completed' }
+            { key: 'today', label: 'Today' }
           ].map((filterOption) => (
             <button
               key={filterOption.key}
@@ -285,7 +283,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
             </button>
           ))}
           
-          {/* Old Appointments Button with Indicator */}
+          {/* Old Appointments Button with Indicator - Right after Today */}
           {getOldPendingAppointments().length > 0 && (
             <button
               onClick={() => setShowOldAppointmentsSection(!showOldAppointmentsSection)}
@@ -306,6 +304,25 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
               </div>
             </button>
           )}
+
+          {[
+            { key: 'pending', label: 'Pending' },
+            { key: 'completed', label: 'Completed' }
+          ].map((filterOption) => (
+            <button
+              key={filterOption.key}
+              onClick={() => setFilter(filterOption.key as any)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap ${
+                filter === filterOption.key
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                  : theme === 'dark'
+                    ? 'bg-gradient-to-r from-gray-700 to-gray-800 text-gray-300 hover:from-gray-600 hover:to-gray-700'
+                    : 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-600 hover:from-gray-200 hover:to-gray-300'
+              }`}
+            >
+              {filterOption.label}
+            </button>
+          ))}
         </div>
 
         {/* Completed Filter Options */}
