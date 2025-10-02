@@ -57,11 +57,26 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
   // Get old pending appointments that were actually completed (have price but not marked as done)
   const getOldPendingAppointments = () => {
     const today = getTodayString();
-    return appointments.filter(appointment => 
+    const oldPending = appointments.filter(appointment => 
       appointment.status === 'pending' && 
       appointment.date < today &&
       appointment.price > 0 // Only show appointments that have a price (were completed)
     );
+    
+    // Debug logging
+    console.log('Debug - Old Pending Appointments:');
+    console.log('Today:', today);
+    console.log('Total appointments:', appointments.length);
+    console.log('Old pending count:', oldPending.length);
+    console.log('All appointments:', appointments.map(apt => ({
+      id: apt.id,
+      status: apt.status,
+      date: apt.date,
+      price: apt.price,
+      title: apt.title
+    })));
+    
+    return oldPending;
   };
 
   const handleBulkComplete = () => {
@@ -372,6 +387,16 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
           </div>
         )}
       </div>
+
+      {/* Debug Info - Remove after fixing */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="mb-4 p-3 bg-yellow-100 border border-yellow-400 rounded text-sm">
+          <strong>Debug Info:</strong><br/>
+          Old Pending Count: {getOldPendingAppointments().length}<br/>
+          Button Should Show: {getOldPendingAppointments().length > 0 ? 'YES' : 'NO'}<br/>
+          Section Should Show: {showOldAppointmentsSection && getOldPendingAppointments().length > 0 ? 'YES' : 'NO'}
+        </div>
+      )}
 
       {/* Old Pending Appointments Section - Only shows when button is clicked */}
       {showOldAppointmentsSection && getOldPendingAppointments().length > 0 && (
