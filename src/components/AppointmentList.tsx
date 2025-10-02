@@ -438,48 +438,126 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                         : 'bg-white border-gray-200 hover:bg-gray-50'
                   }`}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <input
-                        type="checkbox"
-                        checked={selectedOldAppointments.has(appointment.id)}
-                        onChange={() => handleSelectOldAppointment(appointment.id)}
-                        className="w-4 h-4 text-orange-500 rounded focus:ring-orange-400"
-                      />
+                  {/* Mobile Layout - Stacked like normal appointments */}
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-2 sm:space-y-0">
+                    <div className="flex-1 space-y-1">
+                      {/* Mobile: Name and time on same row */}
+                      <div className="flex sm:hidden items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            checked={selectedOldAppointments.has(appointment.id)}
+                            onChange={() => handleSelectOldAppointment(appointment.id)}
+                            className="w-4 h-4 text-orange-500 rounded focus:ring-orange-400"
+                          />
+                          <User className="w-6 h-6 text-gray-400" />
+                          <span className="text-2xl font-semibold">{getClientName(appointment.clientId)}</span>
+                        </div>
+                        <div className={`text-3xl font-bold ${
+                          theme === 'dark' ? 'text-white' : 'text-orange-600'
+                        }`}>
+                          {formatTime(appointment.time)}
+                        </div>
+                      </div>
+
+                      {/* Desktop: Name and checkbox */}
+                      <div className="hidden sm:flex sm:items-center sm:space-x-3">
+                        <input
+                          type="checkbox"
+                          checked={selectedOldAppointments.has(appointment.id)}
+                          onChange={() => handleSelectOldAppointment(appointment.id)}
+                          className="w-4 h-4 text-orange-500 rounded focus:ring-orange-400"
+                        />
+                        <div className="flex items-center space-x-2">
+                          <User className="w-6 h-6 text-gray-400" />
+                          <span className="text-2xl font-semibold">{getClientName(appointment.clientId)}</span>
+                        </div>
+                      </div>
+                      
+                      {/* Mobile: Compact info stack */}
+                      <div className="flex sm:hidden flex-col space-y-1 text-sm text-gray-500">
+                        <div className="flex items-center space-x-1">
+                          <Calendar className="w-4 h-4" />
+                          <span>{formatDisplayDate(appointment.date)}</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <span className="font-semibold text-orange-600">${(appointment.price || 0).toFixed(2)}</span>
+                        </div>
+                      </div>
+
+                      {/* Desktop: Horizontal info */}
+                      <div className="hidden sm:flex sm:items-center sm:space-x-4 text-sm text-gray-500">
+                        <div className="flex items-center space-x-1">
+                          <Calendar className="w-4 h-4" />
+                          <span>{formatDisplayDate(appointment.date)}</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <span className="font-semibold text-orange-600">${(appointment.price || 0).toFixed(2)}</span>
+                          <span className="text-gray-400 ml-1">•</span>
+                          <span className="text-gray-500">{appointment.duration} min</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Desktop: Time and buttons on right */}
+                    <div className="hidden sm:flex sm:flex-col sm:items-end sm:space-y-3 sm:ml-4">
+                      {/* Time Display */}
+                      <div className="text-right">
+                        <div className={`text-4xl font-bold ${
+                          theme === 'dark' ? 'text-white' : 'text-orange-600'
+                        }`}>
+                          {formatTime(appointment.time)}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {appointment.duration} min
+                        </div>
+                      </div>
+                      
+                      {/* Action Buttons */}
                       <div className="flex items-center space-x-2">
-                        <User className="w-4 h-4 text-gray-400" />
-                        <span className="font-semibold">{getClientName(appointment.clientId)}</span>
+                        <button
+                          onClick={() => handleDoneClick(appointment.id)}
+                          className="px-3 py-1 bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600 transition-colors"
+                          title="Mark as Done"
+                        >
+                          Done
+                        </button>
+                        <button
+                          onClick={() => onEdit(appointment.id)}
+                          className="px-3 py-1 bg-blue-500 text-white rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors"
+                          title="Edit Appointment"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(appointment.id)}
+                          className="px-3 py-1 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600 transition-colors"
+                          title="Delete Appointment"
+                        >
+                          Delete
+                        </button>
                       </div>
                     </div>
-                    
-                    <div className="flex items-center space-x-4 text-sm text-gray-500">
-                      <div className="flex items-center space-x-1">
-                        <Calendar className="w-4 h-4" />
-                        <span>{formatDisplayDate(appointment.date)}</span>
-                      </div>
-                      <span className="font-mono">{formatTime(appointment.time)}</span>
-                      <span className="text-orange-600 font-medium">${(appointment.price || 0).toFixed(2)}</span>
-                    </div>
-                    
-                    {/* Action Buttons */}
-                    <div className="flex items-center space-x-2">
+
+                    {/* Mobile: Buttons at bottom right */}
+                    <div className="flex sm:hidden items-center justify-end space-x-3 pt-2">
                       <button
                         onClick={() => handleDoneClick(appointment.id)}
-                        className="px-3 py-1 bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600 transition-colors"
+                        className="px-4 py-2 bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600 transition-colors"
                         title="Mark as Done"
                       >
                         Done
                       </button>
                       <button
                         onClick={() => onEdit(appointment.id)}
-                        className="px-3 py-1 bg-blue-500 text-white rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors"
+                        className="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors"
                         title="Edit Appointment"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => handleDelete(appointment.id)}
-                        className="px-3 py-1 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600 transition-colors"
+                        className="px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600 transition-colors"
                         title="Delete Appointment"
                       >
                         Delete
