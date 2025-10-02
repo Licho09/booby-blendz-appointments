@@ -444,8 +444,9 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                       </div>
                     </div>
                     
-                    {/* Desktop: Time display */}
-                    <div className="hidden sm:flex sm:flex-col sm:items-end sm:ml-4">
+                    {/* Desktop: Time and buttons on right */}
+                    <div className="hidden sm:flex sm:flex-col sm:items-end sm:space-y-3 sm:ml-4">
+                      {/* Time Display */}
                       <div className="text-right">
                         <div className={`text-4xl font-bold ${
                           theme === 'dark' ? 'text-white' : 'text-orange-600'
@@ -456,6 +457,54 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                           {appointment.duration} min
                         </div>
                       </div>
+                      
+                      {/* Action Buttons */}
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDoneClick(appointment.id);
+                          }}
+                          className="px-3 py-1 bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600 transition-colors"
+                          title="Mark as Done"
+                        >
+                          Done
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(appointment.id);
+                          }}
+                          className="px-3 py-1 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600 transition-colors"
+                          title="Delete Appointment"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Mobile: Buttons at bottom right */}
+                    <div className="flex sm:hidden items-center justify-end space-x-3 pt-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDoneClick(appointment.id);
+                        }}
+                        className="px-4 py-2 bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600 transition-colors"
+                        title="Mark as Done"
+                      >
+                        Done
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(appointment.id);
+                        }}
+                        className="px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600 transition-colors"
+                        title="Delete Appointment"
+                      >
+                        Delete
+                      </button>
                     </div>
                   </div>
                 </div>
