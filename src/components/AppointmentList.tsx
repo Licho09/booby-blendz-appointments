@@ -33,9 +33,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<string>('');
   const [priceInput, setPriceInput] = useState('');
   const [deletingAppointments, setDeletingAppointments] = useState<Set<string>>(new Set());
-  const [selectedOldAppointments, setSelectedOldAppointments] = useState<Set<string>>(new Set());
-  const [showBulkCompleteModal, setShowBulkCompleteModal] = useState(false);
-  const [bulkPriceInput, setBulkPriceInput] = useState('');
+  const [selectedOldAppointment, setSelectedOldAppointment] = useState<string | null>(null);
   const [showOldAppointmentsSection, setShowOldAppointmentsSection] = useState(false);
 
   const formatTime = (timeString: string) => {
@@ -67,36 +65,11 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
     return oldPending;
   };
 
-  const handleBulkComplete = () => {
-    const price = parseFloat(bulkPriceInput);
-    if (!isNaN(price) && price >= 0) {
-      selectedOldAppointments.forEach(appointmentId => {
-        onMarkComplete(appointmentId, price);
-      });
-      setSelectedOldAppointments(new Set());
-      setShowBulkCompleteModal(false);
-      setBulkPriceInput('');
-    }
-  };
-
   const handleSelectOldAppointment = (appointmentId: string) => {
-    setSelectedOldAppointments(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(appointmentId)) {
-        newSet.delete(appointmentId);
-      } else {
-        newSet.add(appointmentId);
-      }
-      return newSet;
-    });
-  };
-
-  const handleSelectAllOldAppointments = () => {
-    const oldAppointments = getOldPendingAppointments();
-    if (selectedOldAppointments.size === oldAppointments.length) {
-      setSelectedOldAppointments(new Set());
+    if (selectedOldAppointment === appointmentId) {
+      setSelectedOldAppointment(null);
     } else {
-      setSelectedOldAppointments(new Set(oldAppointments.map(apt => apt.id)));
+      setSelectedOldAppointment(appointmentId);
     }
   };
 
@@ -397,26 +370,9 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                 </span>
               </div>
               <div className="flex items-center space-x-2">
-                <button
-                  onClick={handleSelectAllOldAppointments}
-                  className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                    selectedOldAppointments.size === getOldPendingAppointments().length
-                      ? 'bg-orange-500 text-white'
-                      : theme === 'dark'
-                        ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  {selectedOldAppointments.size === getOldPendingAppointments().length ? 'Deselect All' : 'Select All'}
-                </button>
-                {selectedOldAppointments.size > 0 && (
-                  <button
-                    onClick={() => setShowBulkCompleteModal(true)}
-                    className="px-3 py-1 bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600 transition-colors"
-                  >
-                    Complete Selected ({selectedOldAppointments.size})
-                  </button>
-                )}
+                <span className="text-sm text-gray-500">
+                  Select an appointment to manage it
+                </span>
               </div>
             </div>
             <p className="text-sm mb-3">
@@ -428,8 +384,8 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
               {getOldPendingAppointments().map((appointment) => (
                 <div
                   key={appointment.id}
-                  className={`p-3 rounded-lg border transition-all duration-200 ${
-                    selectedOldAppointments.has(appointment.id)
+                  className={`p-3 rounded-lg border transition-all duration-200 cursor-pointer ${
+                    selectedOldAppointment === appointment.id
                       ? theme === 'dark' 
                         ? 'bg-orange-800/30 border-orange-400' 
                         : 'bg-orange-100 border-orange-300'
@@ -437,6 +393,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                         ? 'bg-gray-800 border-gray-700 hover:bg-gray-700'
                         : 'bg-white border-gray-200 hover:bg-gray-50'
                   }`}
+                  onClick={() => handleSelectOldAppointment(appointment.id)}
                 >
                   {/* Mobile Layout - Stacked like normal appointments */}
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-2 sm:space-y-0">
@@ -444,12 +401,6 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                       {/* Mobile: Name and time on same row */}
                       <div className="flex sm:hidden items-center justify-between">
                         <div className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            checked={selectedOldAppointments.has(appointment.id)}
-                            onChange={() => handleSelectOldAppointment(appointment.id)}
-                            className="w-4 h-4 text-orange-500 rounded focus:ring-orange-400"
-                          />
                           <User className="w-6 h-6 text-gray-400" />
                           <span className="text-2xl font-semibold">{getClientName(appointment.clientId)}</span>
                         </div>
@@ -460,14 +411,8 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                         </div>
                       </div>
 
-                      {/* Desktop: Name and checkbox */}
+                      {/* Desktop: Name */}
                       <div className="hidden sm:flex sm:items-center sm:space-x-3">
-                        <input
-                          type="checkbox"
-                          checked={selectedOldAppointments.has(appointment.id)}
-                          onChange={() => handleSelectOldAppointment(appointment.id)}
-                          className="w-4 h-4 text-orange-500 rounded focus:ring-orange-400"
-                        />
                         <div className="flex items-center space-x-2">
                           <User className="w-6 h-6 text-gray-400" />
                           <span className="text-2xl font-semibold">{getClientName(appointment.clientId)}</span>
@@ -499,9 +444,8 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                       </div>
                     </div>
                     
-                    {/* Desktop: Time and buttons on right */}
-                    <div className="hidden sm:flex sm:flex-col sm:items-end sm:space-y-3 sm:ml-4">
-                      {/* Time Display */}
+                    {/* Desktop: Time display */}
+                    <div className="hidden sm:flex sm:flex-col sm:items-end sm:ml-4">
                       <div className="text-right">
                         <div className={`text-4xl font-bold ${
                           theme === 'dark' ? 'text-white' : 'text-orange-600'
@@ -512,56 +456,6 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                           {appointment.duration} min
                         </div>
                       </div>
-                      
-                      {/* Action Buttons */}
-                      <div className="flex items-center space-x-2">
-                        <button
-                          onClick={() => handleDoneClick(appointment.id)}
-                          className="px-3 py-1 bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600 transition-colors"
-                          title="Mark as Done"
-                        >
-                          Done
-                        </button>
-                        <button
-                          onClick={() => onEdit(appointment.id)}
-                          className="px-3 py-1 bg-blue-500 text-white rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors"
-                          title="Edit Appointment"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(appointment.id)}
-                          className="px-3 py-1 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600 transition-colors"
-                          title="Delete Appointment"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Mobile: Buttons at bottom right */}
-                    <div className="flex sm:hidden items-center justify-end space-x-3 pt-2">
-                      <button
-                        onClick={() => handleDoneClick(appointment.id)}
-                        className="px-4 py-2 bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600 transition-colors"
-                        title="Mark as Done"
-                      >
-                        Done
-                      </button>
-                      <button
-                        onClick={() => onEdit(appointment.id)}
-                        className="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors"
-                        title="Edit Appointment"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(appointment.id)}
-                        className="px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600 transition-colors"
-                        title="Delete Appointment"
-                      >
-                        Delete
-                      </button>
                     </div>
                   </div>
                 </div>
@@ -1105,93 +999,6 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
         )}
       </div>
 
-      {/* Bulk Complete Modal */}
-      {showBulkCompleteModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className={`w-full max-w-md rounded-xl shadow-xl ${
-            theme === 'dark' ? 'bg-gray-800' : 'bg-white'
-          } overflow-hidden`}>
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-              <h2 className="text-xl font-semibold">Complete Old Appointments</h2>
-              <button
-                onClick={() => setShowBulkCompleteModal(false)}
-                className={`p-1 rounded-full transition-colors ${
-                  theme === 'dark' 
-                    ? 'hover:bg-gray-700 text-gray-400' 
-                    : 'hover:bg-gray-100 text-gray-500'
-                }`}
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Content */}
-            <div className="p-6">
-              <div className="space-y-4">
-                <div className="text-center">
-                  <p className="text-lg font-medium mb-2">
-                    Complete {selectedOldAppointments.size} appointment{selectedOldAppointments.size !== 1 ? 's' : ''}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    Enter the price that was charged for these appointments
-                  </p>
-                </div>
-                
-                <div className="relative">
-                  <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 text-3xl font-bold ${
-                    theme === 'dark' ? 'text-white' : 'text-gray-900'
-                  }`}>
-                    $
-                  </div>
-                  <input
-                    type="text"
-                    value={bulkPriceInput}
-                    onChange={(e) => setBulkPriceInput(e.target.value)}
-                    placeholder="0.00"
-                    inputMode="decimal"
-                    pattern="[0-9]*"
-                    autoComplete="off"
-                    autoCapitalize="off"
-                    autoCorrect="off"
-                    spellCheck="false"
-                    className={`w-full pl-12 pr-4 py-4 text-3xl font-bold text-center rounded-lg border transition-colors ${
-                      theme === 'dark' 
-                        ? 'bg-gray-700 border-gray-600 text-white focus:border-orange-500' 
-                        : 'bg-white border-gray-300 text-gray-900 focus:border-orange-500'
-                    } focus:outline-none focus:ring-2 focus:ring-orange-200`}
-                    autoFocus
-                  />
-                </div>
-                <div className="text-center text-sm text-gray-500">
-                  This price will be applied to all selected appointments
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="flex space-x-3 pt-6">
-                <button
-                  onClick={() => setShowBulkCompleteModal(false)}
-                  className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors ${
-                    theme === 'dark' 
-                      ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleBulkComplete}
-                  disabled={!bulkPriceInput || parseFloat(bulkPriceInput) < 0}
-                  className="flex-1 px-4 py-3 bg-orange-500 text-white rounded-lg font-medium hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Complete All
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Price Input Modal */}
       {showPriceModal && (
