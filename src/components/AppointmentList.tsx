@@ -62,32 +62,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
       appointment.date < today // Only previous days, not today
     );
     
-    // Debug logging
-    console.log('Debug - Past Due Appointments:');
-    console.log('Today:', today);
-    console.log('Total appointments:', appointments.length);
-    console.log('Past due count:', oldPending.length);
-    
-    // Check each filter condition
-    const pendingAppointments = appointments.filter(apt => apt.status === 'pending');
-    const pastDueAppointments = appointments.filter(apt => apt.date < today);
-    const todayAppointments = appointments.filter(apt => apt.date === today);
-    
-    console.log('Pending appointments:', pendingAppointments.length);
-    console.log('Past due appointments (date < today):', pastDueAppointments.length);
-    console.log('Today appointments:', todayAppointments.length);
-    console.log('Past due AND Pending:', oldPending.length);
-    
-    console.log('All appointments details:', appointments.map(apt => ({
-      id: apt.id,
-      status: apt.status,
-      date: apt.date,
-      price: apt.price,
-      title: apt.title,
-      isPending: apt.status === 'pending',
-      isOld: apt.date < today,
-      hasPrice: apt.price > 0
-    })));
+    // Debug logging removed - feature is working correctly
     
     return oldPending;
   };
@@ -155,16 +130,21 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
 
     if (!matchesSearch) return false;
 
-    const today = new Date().toLocaleDateString('en-CA');
+    // Exclude past due appointments from all other filters
+    const today = getTodayString();
+    const isPastDue = appointment.status === 'pending' && appointment.date < today;
+    if (isPastDue) return false;
+
+    const todayFormatted = new Date().toLocaleDateString('en-CA');
     const appointmentDate = appointment.date;
     const appointmentDateTime = new Date(`${appointment.date}T${appointment.time}`);
     const now = new Date();
     
     switch (filter) {
       case 'today':
-        return appointmentDate === today;
+        return appointmentDate === todayFormatted;
       case 'upcoming':
-        return appointmentDate > today;
+        return appointmentDate > todayFormatted;
       case 'pending':
         return appointment.status === 'pending';
       case 'completed':
@@ -173,7 +153,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
         // Apply completed filter
         switch (completedFilter) {
           case 'today':
-            return appointmentDate === today;
+            return appointmentDate === todayFormatted;
           case 'week':
             const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
             return appointmentDateTime >= weekAgo;
@@ -401,15 +381,6 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
         )}
       </div>
 
-      {/* Debug Info - Remove after fixing */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="mb-4 p-3 bg-yellow-100 border border-yellow-400 rounded text-sm">
-          <strong>Debug Info:</strong><br/>
-          Past Due Count: {getOldPendingAppointments().length}<br/>
-          Button Should Show: {getOldPendingAppointments().length > 0 ? 'YES' : 'NO'}<br/>
-          Section Should Show: {showOldAppointmentsSection && getOldPendingAppointments().length > 0 ? 'YES' : 'NO'}
-        </div>
-      )}
 
       {/* Old Pending Appointments Section - Only shows when button is clicked */}
       {showOldAppointmentsSection && getOldPendingAppointments().length > 0 && (
