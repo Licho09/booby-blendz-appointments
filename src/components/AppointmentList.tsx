@@ -54,13 +54,13 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
     return `${year}-${month}-${day}`;
   };
 
-  // Get old pending appointments that were actually completed (have price but not marked as done)
+  // Get old pending appointments (past their scheduled date but still marked as pending)
   const getOldPendingAppointments = () => {
     const today = getTodayString();
     const oldPending = appointments.filter(appointment => 
       appointment.status === 'pending' && 
-      appointment.date < today &&
-      appointment.price > 0 // Only show appointments that have a price (were completed)
+      appointment.date < today
+      // Removed price requirement - show all old pending appointments
     );
     
     // Debug logging
@@ -458,7 +458,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
             </div>
             <p className="text-sm mb-3">
               These appointments are past their scheduled date but still marked as pending. 
-              Select the ones that were actually completed and mark them as done.
+              You can mark them as completed, edit them, or delete them as needed.
             </p>
             
             <div className="space-y-2">
