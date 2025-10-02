@@ -6,32 +6,32 @@ const config = require('../config');
 // Authentication functions
 const authService = {
   // Register a new user - DISABLED for single-user app
-  async registerUser(email, password) {
+  async registerUser(username, password) {
     return { success: false, error: 'User registration is disabled. This is a single-user application.' };
   },
 
   // Login user - HARDCODED CREDENTIALS ONLY
-  async loginUser(email, password) {
+  async loginUser(username, password) {
     try {
       // HARDCODED CREDENTIALS - ONLY YOU CAN LOG IN
-      const ALLOWED_EMAIL = config.ALLOWED_EMAIL;
+      const ALLOWED_USERNAME = config.ALLOWED_USERNAME;
       const ALLOWED_PASSWORD = config.ALLOWED_PASSWORD;
       
-      // Check if email and password match hardcoded values
-      if (email !== ALLOWED_EMAIL || password !== ALLOWED_PASSWORD) {
+      // Check if username and password match hardcoded values
+      if (username !== ALLOWED_USERNAME || password !== ALLOWED_PASSWORD) {
         throw new Error('Invalid credentials. Access denied.');
       }
 
       // Create user object for successful login
       const user = {
         id: '550e8400-e29b-41d4-a716-446655440000', // Valid UUID for single user
-        email: ALLOWED_EMAIL,
+        username: ALLOWED_USERNAME,
         created_at: new Date().toISOString()
       };
 
       // Generate JWT token
       const token = jwt.sign(
-        { userId: user.id, email: user.email },
+        { userId: user.id, username: user.username },
         process.env.JWT_SECRET,
         { expiresIn: '7d' }
       );

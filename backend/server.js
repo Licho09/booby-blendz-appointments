@@ -458,23 +458,23 @@ app.post('/api/auth/register', async (req, res) => {
 
 app.post('/api/auth/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
     
-    if (!email || !password) {
+    if (!username || !password) {
       return res.status(400).json({
         success: false,
-        error: 'Email and password are required'
+        error: 'Username and password are required'
       });
     }
 
-    const result = await authService.loginUser(email, password);
+    const result = await authService.loginUser(username, password);
     
     if (result.success) {
       res.json({
         success: true,
         message: 'Login successful',
         token: result.token,
-        user: { id: result.user.id, email: result.user.email }
+        user: { id: result.user.id, username: result.user.username }
       });
     } else {
       res.status(401).json({
