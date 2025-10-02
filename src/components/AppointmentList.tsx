@@ -54,37 +54,29 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
     return `${year}-${month}-${day}`;
   };
 
-  // Get old pending appointments (past their scheduled date but still marked as pending)
+  // Get past due appointments (from previous days that are incomplete)
   const getOldPendingAppointments = () => {
     const today = getTodayString();
     const oldPending = appointments.filter(appointment => 
       appointment.status === 'pending' && 
-      appointment.date < today
-      // Removed price requirement - show all old pending appointments
+      appointment.date < today // Only previous days, not today
     );
     
     // Debug logging
-    console.log('Debug - Old Pending Appointments:');
+    console.log('Debug - Past Due Appointments:');
     console.log('Today:', today);
     console.log('Total appointments:', appointments.length);
-    console.log('Old pending count:', oldPending.length);
+    console.log('Past due count:', oldPending.length);
     
     // Check each filter condition
     const pendingAppointments = appointments.filter(apt => apt.status === 'pending');
-    const oldAppointments = appointments.filter(apt => apt.date < today);
-    const pricedAppointments = appointments.filter(apt => apt.price > 0);
-    
-    // Check intersections
-    const pendingAndOld = appointments.filter(apt => apt.status === 'pending' && apt.date < today);
-    const pendingAndPriced = appointments.filter(apt => apt.status === 'pending' && apt.price > 0);
-    const oldAndPriced = appointments.filter(apt => apt.date < today && apt.price > 0);
+    const pastDueAppointments = appointments.filter(apt => apt.date < today);
+    const todayAppointments = appointments.filter(apt => apt.date === today);
     
     console.log('Pending appointments:', pendingAppointments.length);
-    console.log('Old appointments (date < today):', oldAppointments.length);
-    console.log('Priced appointments (price > 0):', pricedAppointments.length);
-    console.log('Pending AND Old:', pendingAndOld.length);
-    console.log('Pending AND Priced:', pendingAndPriced.length);
-    console.log('Old AND Priced:', oldAndPriced.length);
+    console.log('Past due appointments (date < today):', pastDueAppointments.length);
+    console.log('Today appointments:', todayAppointments.length);
+    console.log('Past due AND Pending:', oldPending.length);
     
     console.log('All appointments details:', appointments.map(apt => ({
       id: apt.id,
@@ -457,7 +449,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
               </div>
             </div>
             <p className="text-sm mb-3">
-              These appointments are past their scheduled date but still marked as pending. 
+              These appointments are from previous days but still marked as pending. 
               You can mark them as completed, edit them, or delete them as needed.
             </p>
             
