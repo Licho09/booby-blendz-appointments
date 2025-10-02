@@ -54,11 +54,13 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
     return `${year}-${month}-${day}`;
   };
 
-  // Get old pending appointments (older than today)
+  // Get old pending appointments that were actually completed (have price but not marked as done)
   const getOldPendingAppointments = () => {
     const today = getTodayString();
     return appointments.filter(appointment => 
-      appointment.status === 'pending' && appointment.date < today
+      appointment.status === 'pending' && 
+      appointment.date < today &&
+      appointment.price > 0 // Only show appointments that have a price (were completed)
     );
   };
 
@@ -296,7 +298,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
               }`}
             >
               <div className="flex items-center space-x-2">
-                <span>Old Pending</span>
+                <span>Completed</span>
                 <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
                 <span className="text-xs bg-red-500 text-white px-1.5 py-0.5 rounded-full">
                   {getOldPendingAppointments().length}
@@ -363,7 +365,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center space-x-2">
                 <div className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
-                <h3 className="text-lg font-semibold">Old Pending Appointments</h3>
+                <h3 className="text-lg font-semibold">Completed but Not Marked Done</h3>
                 <span className="text-sm bg-orange-200 text-orange-800 px-2 py-1 rounded-full">
                   {getOldPendingAppointments().length}
                 </span>
@@ -392,8 +394,8 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
               </div>
             </div>
             <p className="text-sm mb-3">
-              These appointments are past their scheduled date but still marked as pending. 
-              Select the ones that were actually completed and mark them as done.
+              These appointments were completed (have prices set) but are still marked as pending. 
+              Mark them as done to move them to your completed appointments.
             </p>
             
             <div className="space-y-2">
