@@ -273,7 +273,7 @@ function App() {
       />
       
       {/* TEMPORARY DEBUG - REMOVE AFTER FIXING */}
-      {process.env.NODE_ENV === 'development' && (
+      {import.meta.env.DEV && (
         <div className="fixed top-4 right-4 z-50 bg-blue-500 text-white p-2 rounded text-xs">
           Mobile: {isMobile ? 'Yes' : 'No'}<br/>
           Loading: {showLoadingScreen ? 'Yes' : 'No'}<br/>
@@ -287,7 +287,6 @@ function App() {
           ? 'bg-gray-900 text-white' 
           : 'bg-gradient-to-br from-blue-50 via-white to-indigo-50 text-gray-900'
       }`} style={{ 
-        minHeight: '100vh',
         minHeight: '100dvh'
       }}>
       {/* Status Bar */}
@@ -341,8 +340,12 @@ function App() {
               <div className="w-4 h-4 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
             <div className="ml-3">
-              <p className="text-sm font-medium">Recovering data...</p>
-              <p className="text-xs">Please wait while we reload your appointments and clients.</p>
+              <p className="text-sm font-medium">
+                {dataLoading ? 'Loading appointments...' : 'Recovering data...'}
+              </p>
+              <p className="text-xs">
+                {dataLoading ? 'Please wait while we load your appointments and clients.' : 'Please wait while we reload your appointments and clients.'}
+              </p>
             </div>
           </div>
         </div>

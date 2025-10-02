@@ -33,6 +33,9 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<string>('');
   const [priceInput, setPriceInput] = useState('');
   const [deletingAppointments, setDeletingAppointments] = useState<Set<string>>(new Set());
+  const [selectedOldAppointments, setSelectedOldAppointments] = useState<Set<string>>(new Set());
+  const [showBulkCompleteModal, setShowBulkCompleteModal] = useState(false);
+  const [bulkPriceInput, setBulkPriceInput] = useState('');
 
   const formatTime = (timeString: string) => {
     const [hours, minutes] = timeString.split(':');
@@ -48,6 +51,47 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
+  };
+
+  // Get old pending appointments (older than today)
+  const getOldPendingAppointments = () => {
+    const today = getTodayString();
+    return appointments.filter(appointment => 
+      appointment.status === 'pending' && appointment.date < today
+    );
+  };
+
+  const handleBulkComplete = () => {
+    const price = parseFloat(bulkPriceInput);
+    if (!isNaN(price) && price >= 0) {
+      selectedOldAppointments.forEach(appointmentId => {
+        onMarkComplete(appointmentId, price);
+      });
+      setSelectedOldAppointments(new Set());
+      setShowBulkCompleteModal(false);
+      setBulkPriceInput('');
+    }
+  };
+
+  const handleSelectOldAppointment = (appointmentId: string) => {
+    setSelectedOldAppointments(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(appointmentId)) {
+        newSet.delete(appointmentId);
+      } else {
+        newSet.add(appointmentId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleSelectAllOldAppointments = () => {
+    const oldAppointments = getOldPendingAppointments();
+    if (selectedOldAppointments.size === oldAppointments.length) {
+      setSelectedOldAppointments(new Set());
+    } else {
+      setSelectedOldAppointments(new Set(oldAppointments.map(apt => apt.id)));
+    }
   };
 
   const formatDisplayDate = (dateString: string) => {
@@ -286,6 +330,99 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
           </div>
         )}
       </div>
+
+      {/* Old Pending Appointments Section */}
+      {(() => {
+        const oldPendingAppointments = getOldPendingAppointments();
+        if (oldPendingAppointments.length > 0) {
+          return (
+            <div className="mb-6">
+              <div className={`p-4 rounded-xl border-l-4 border-orange-500 ${
+                theme === 'dark' ? 'bg-orange-900/20 text-orange-200' : 'bg-orange-50 text-orange-800'
+              }`}>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+                    <h3 className="text-lg font-semibold">Old Pending Appointments</h3>
+                    <span className="text-sm bg-orange-200 text-orange-800 px-2 py-1 rounded-full">
+                      {oldPendingAppointments.length}
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={handleSelectAllOldAppointments}
+                      className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                        selectedOldAppointments.size === oldPendingAppointments.length
+                          ? 'bg-orange-500 text-white'
+                          : theme === 'dark'
+                            ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      }`}
+                    >
+                      {selectedOldAppointments.size === oldPendingAppointments.length ? 'Deselect All' : 'Select All'}
+                    </button>
+                    {selectedOldAppointments.size > 0 && (
+                      <button
+                        onClick={() => setShowBulkCompleteModal(true)}
+                        className="px-3 py-1 bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600 transition-colors"
+                      >
+                        Complete Selected ({selectedOldAppointments.size})
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <p className="text-sm mb-3">
+                  These appointments are past their scheduled date but still marked as pending. 
+                  Select the ones that were actually completed and mark them as done.
+                </p>
+                
+                <div className="space-y-2">
+                  {oldPendingAppointments.map((appointment) => (
+                    <div
+                      key={appointment.id}
+                      className={`p-3 rounded-lg border transition-all duration-200 ${
+                        selectedOldAppointments.has(appointment.id)
+                          ? theme === 'dark' 
+                            ? 'bg-orange-800/30 border-orange-400' 
+                            : 'bg-orange-100 border-orange-300'
+                          : theme === 'dark'
+                            ? 'bg-gray-800 border-gray-700 hover:bg-gray-700'
+                            : 'bg-white border-gray-200 hover:bg-gray-50'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <input
+                          type="checkbox"
+                          checked={selectedOldAppointments.has(appointment.id)}
+                          onChange={() => handleSelectOldAppointment(appointment.id)}
+                          className="w-4 h-4 text-orange-500 rounded focus:ring-orange-400"
+                        />
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2">
+                              <User className="w-4 h-4 text-gray-400" />
+                              <span className="font-semibold">{getClientName(appointment.clientId)}</span>
+                            </div>
+                            <div className="flex items-center space-x-4 text-sm text-gray-500">
+                              <div className="flex items-center space-x-1">
+                                <Calendar className="w-4 h-4" />
+                                <span>{formatDisplayDate(appointment.date)}</span>
+                              </div>
+                              <span className="font-mono">{formatTime(appointment.time)}</span>
+                              <span className="text-orange-600 font-medium">${(appointment.price || 0).toFixed(2)}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          );
+        }
+        return null;
+      })()}
 
       {/* Appointments List */}
       <div className="space-y-3">
@@ -820,6 +957,94 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
           })()
         )}
       </div>
+
+      {/* Bulk Complete Modal */}
+      {showBulkCompleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className={`w-full max-w-md rounded-xl shadow-xl ${
+            theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+          } overflow-hidden`}>
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+              <h2 className="text-xl font-semibold">Complete Old Appointments</h2>
+              <button
+                onClick={() => setShowBulkCompleteModal(false)}
+                className={`p-1 rounded-full transition-colors ${
+                  theme === 'dark' 
+                    ? 'hover:bg-gray-700 text-gray-400' 
+                    : 'hover:bg-gray-100 text-gray-500'
+                }`}
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-6">
+              <div className="space-y-4">
+                <div className="text-center">
+                  <p className="text-lg font-medium mb-2">
+                    Complete {selectedOldAppointments.size} appointment{selectedOldAppointments.size !== 1 ? 's' : ''}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Enter the price that was charged for these appointments
+                  </p>
+                </div>
+                
+                <div className="relative">
+                  <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 text-3xl font-bold ${
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  }`}>
+                    $
+                  </div>
+                  <input
+                    type="text"
+                    value={bulkPriceInput}
+                    onChange={(e) => setBulkPriceInput(e.target.value)}
+                    placeholder="0.00"
+                    inputMode="decimal"
+                    pattern="[0-9]*"
+                    autoComplete="off"
+                    autoCapitalize="off"
+                    autoCorrect="off"
+                    spellCheck="false"
+                    className={`w-full pl-12 pr-4 py-4 text-3xl font-bold text-center rounded-lg border transition-colors ${
+                      theme === 'dark' 
+                        ? 'bg-gray-700 border-gray-600 text-white focus:border-orange-500' 
+                        : 'bg-white border-gray-300 text-gray-900 focus:border-orange-500'
+                    } focus:outline-none focus:ring-2 focus:ring-orange-200`}
+                    autoFocus
+                  />
+                </div>
+                <div className="text-center text-sm text-gray-500">
+                  This price will be applied to all selected appointments
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex space-x-3 pt-6">
+                <button
+                  onClick={() => setShowBulkCompleteModal(false)}
+                  className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors ${
+                    theme === 'dark' 
+                      ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleBulkComplete}
+                  disabled={!bulkPriceInput || parseFloat(bulkPriceInput) < 0}
+                  className="flex-1 px-4 py-3 bg-orange-500 text-white rounded-lg font-medium hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Complete All
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Price Input Modal */}
       {showPriceModal && (

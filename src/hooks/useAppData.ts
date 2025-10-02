@@ -8,6 +8,7 @@ export function useAppData() {
   
   const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false);
   const [hasDataLoss, setHasDataLoss] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   // Check if we have data loss (appointments but no clients, or vice versa)
   useEffect(() => {
@@ -65,6 +66,7 @@ export function useAppData() {
   useEffect(() => {
     if (!appointments.isLoading && !clients.isLoading && !appointments.error && !clients.error) {
       setIsInitialLoadComplete(true);
+      setIsInitialLoading(false);
     }
   }, [appointments.isLoading, clients.isLoading, appointments.error, clients.error]);
 
@@ -79,7 +81,7 @@ export function useAppData() {
     isLoading: appointments.isLoading || clients.isLoading,
     error: appointments.error || clients.error,
     isInitialLoadComplete,
-    hasDataLoss,
+    hasDataLoss: hasDataLoss || isInitialLoading,
     refreshAll,
     // Individual hooks for specific operations
     addAppointment: appointments.addAppointment,
