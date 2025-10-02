@@ -246,8 +246,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
 
         <div className="flex space-x-2 overflow-x-auto">
           {[
-            { key: 'all', label: 'All' },
-            { key: 'today', label: 'Today' }
+            { key: 'all', label: 'All' }
           ].map((filterOption) => (
             <button
               key={filterOption.key}
@@ -264,7 +263,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
             </button>
           ))}
           
-          {/* Old Appointments Button with Indicator - Right after Today */}
+          {/* Past Due Button with Indicator - Left of Today */}
           {getOldPendingAppointments().length > 0 && (
             <button
               onClick={() => setShowOldAppointmentsSection(!showOldAppointmentsSection)}
@@ -287,6 +286,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
           )}
 
           {[
+            { key: 'today', label: 'Today' },
             { key: 'pending', label: 'Upcoming' },
             { key: 'completed', label: 'Completed' }
           ].map((filterOption) => (
