@@ -68,12 +68,25 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
     console.log('Today:', today);
     console.log('Total appointments:', appointments.length);
     console.log('Old pending count:', oldPending.length);
-    console.log('All appointments:', appointments.map(apt => ({
+    
+    // Check each filter condition
+    const pendingAppointments = appointments.filter(apt => apt.status === 'pending');
+    const oldAppointments = appointments.filter(apt => apt.date < today);
+    const pricedAppointments = appointments.filter(apt => apt.price > 0);
+    
+    console.log('Pending appointments:', pendingAppointments.length);
+    console.log('Old appointments (date < today):', oldAppointments.length);
+    console.log('Priced appointments (price > 0):', pricedAppointments.length);
+    
+    console.log('All appointments details:', appointments.map(apt => ({
       id: apt.id,
       status: apt.status,
       date: apt.date,
       price: apt.price,
-      title: apt.title
+      title: apt.title,
+      isPending: apt.status === 'pending',
+      isOld: apt.date < today,
+      hasPrice: apt.price > 0
     })));
     
     return oldPending;
