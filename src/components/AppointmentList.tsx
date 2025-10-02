@@ -36,6 +36,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
   const [selectedOldAppointments, setSelectedOldAppointments] = useState<Set<string>>(new Set());
   const [showBulkCompleteModal, setShowBulkCompleteModal] = useState(false);
   const [bulkPriceInput, setBulkPriceInput] = useState('');
+  const [showOldAppointmentsSection, setShowOldAppointmentsSection] = useState(false);
 
   const formatTime = (timeString: string) => {
     const [hours, minutes] = timeString.split(':');
@@ -281,6 +282,28 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
               {filterOption.label}
             </button>
           ))}
+          
+          {/* Old Appointments Button with Indicator */}
+          {getOldPendingAppointments().length > 0 && (
+            <button
+              onClick={() => setShowOldAppointmentsSection(!showOldAppointmentsSection)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap relative ${
+                showOldAppointmentsSection
+                  ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg'
+                  : theme === 'dark'
+                    ? 'bg-gradient-to-r from-gray-700 to-gray-800 text-gray-300 hover:from-gray-600 hover:to-gray-700'
+                    : 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-600 hover:from-gray-200 hover:to-gray-300'
+              }`}
+            >
+              <div className="flex items-center space-x-2">
+                <span>Old Pending</span>
+                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                <span className="text-xs bg-red-500 text-white px-1.5 py-0.5 rounded-full">
+                  {getOldPendingAppointments().length}
+                </span>
+              </div>
+            </button>
+          )}
         </div>
 
         {/* Completed Filter Options */}
@@ -331,98 +354,116 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
         )}
       </div>
 
-      {/* Old Pending Appointments Section */}
-      {(() => {
-        const oldPendingAppointments = getOldPendingAppointments();
-        if (oldPendingAppointments.length > 0) {
-          return (
-            <div className="mb-6">
-              <div className={`p-4 rounded-xl border-l-4 border-orange-500 ${
-                theme === 'dark' ? 'bg-orange-900/20 text-orange-200' : 'bg-orange-50 text-orange-800'
-              }`}>
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
-                    <h3 className="text-lg font-semibold">Old Pending Appointments</h3>
-                    <span className="text-sm bg-orange-200 text-orange-800 px-2 py-1 rounded-full">
-                      {oldPendingAppointments.length}
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={handleSelectAllOldAppointments}
-                      className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                        selectedOldAppointments.size === oldPendingAppointments.length
-                          ? 'bg-orange-500 text-white'
-                          : theme === 'dark'
-                            ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                      }`}
-                    >
-                      {selectedOldAppointments.size === oldPendingAppointments.length ? 'Deselect All' : 'Select All'}
-                    </button>
-                    {selectedOldAppointments.size > 0 && (
-                      <button
-                        onClick={() => setShowBulkCompleteModal(true)}
-                        className="px-3 py-1 bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600 transition-colors"
-                      >
-                        Complete Selected ({selectedOldAppointments.size})
-                      </button>
-                    )}
-                  </div>
-                </div>
-                <p className="text-sm mb-3">
-                  These appointments are past their scheduled date but still marked as pending. 
-                  Select the ones that were actually completed and mark them as done.
-                </p>
-                
-                <div className="space-y-2">
-                  {oldPendingAppointments.map((appointment) => (
-                    <div
-                      key={appointment.id}
-                      className={`p-3 rounded-lg border transition-all duration-200 ${
-                        selectedOldAppointments.has(appointment.id)
-                          ? theme === 'dark' 
-                            ? 'bg-orange-800/30 border-orange-400' 
-                            : 'bg-orange-100 border-orange-300'
-                          : theme === 'dark'
-                            ? 'bg-gray-800 border-gray-700 hover:bg-gray-700'
-                            : 'bg-white border-gray-200 hover:bg-gray-50'
-                      }`}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <input
-                          type="checkbox"
-                          checked={selectedOldAppointments.has(appointment.id)}
-                          onChange={() => handleSelectOldAppointment(appointment.id)}
-                          className="w-4 h-4 text-orange-500 rounded focus:ring-orange-400"
-                        />
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-2">
-                              <User className="w-4 h-4 text-gray-400" />
-                              <span className="font-semibold">{getClientName(appointment.clientId)}</span>
-                            </div>
-                            <div className="flex items-center space-x-4 text-sm text-gray-500">
-                              <div className="flex items-center space-x-1">
-                                <Calendar className="w-4 h-4" />
-                                <span>{formatDisplayDate(appointment.date)}</span>
-                              </div>
-                              <span className="font-mono">{formatTime(appointment.time)}</span>
-                              <span className="text-orange-600 font-medium">${(appointment.price || 0).toFixed(2)}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+      {/* Old Pending Appointments Section - Only shows when button is clicked */}
+      {showOldAppointmentsSection && getOldPendingAppointments().length > 0 && (
+        <div className="mb-6">
+          <div className={`p-4 rounded-xl border-l-4 border-orange-500 ${
+            theme === 'dark' ? 'bg-orange-900/20 text-orange-200' : 'bg-orange-50 text-orange-800'
+          }`}>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+                <h3 className="text-lg font-semibold">Old Pending Appointments</h3>
+                <span className="text-sm bg-orange-200 text-orange-800 px-2 py-1 rounded-full">
+                  {getOldPendingAppointments().length}
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={handleSelectAllOldAppointments}
+                  className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                    selectedOldAppointments.size === getOldPendingAppointments().length
+                      ? 'bg-orange-500 text-white'
+                      : theme === 'dark'
+                        ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  {selectedOldAppointments.size === getOldPendingAppointments().length ? 'Deselect All' : 'Select All'}
+                </button>
+                {selectedOldAppointments.size > 0 && (
+                  <button
+                    onClick={() => setShowBulkCompleteModal(true)}
+                    className="px-3 py-1 bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600 transition-colors"
+                  >
+                    Complete Selected ({selectedOldAppointments.size})
+                  </button>
+                )}
               </div>
             </div>
-          );
-        }
-        return null;
-      })()}
+            <p className="text-sm mb-3">
+              These appointments are past their scheduled date but still marked as pending. 
+              Select the ones that were actually completed and mark them as done.
+            </p>
+            
+            <div className="space-y-2">
+              {getOldPendingAppointments().map((appointment) => (
+                <div
+                  key={appointment.id}
+                  className={`p-3 rounded-lg border transition-all duration-200 ${
+                    selectedOldAppointments.has(appointment.id)
+                      ? theme === 'dark' 
+                        ? 'bg-orange-800/30 border-orange-400' 
+                        : 'bg-orange-100 border-orange-300'
+                      : theme === 'dark'
+                        ? 'bg-gray-800 border-gray-700 hover:bg-gray-700'
+                        : 'bg-white border-gray-200 hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <input
+                        type="checkbox"
+                        checked={selectedOldAppointments.has(appointment.id)}
+                        onChange={() => handleSelectOldAppointment(appointment.id)}
+                        className="w-4 h-4 text-orange-500 rounded focus:ring-orange-400"
+                      />
+                      <div className="flex items-center space-x-2">
+                        <User className="w-4 h-4 text-gray-400" />
+                        <span className="font-semibold">{getClientName(appointment.clientId)}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center space-x-4 text-sm text-gray-500">
+                      <div className="flex items-center space-x-1">
+                        <Calendar className="w-4 h-4" />
+                        <span>{formatDisplayDate(appointment.date)}</span>
+                      </div>
+                      <span className="font-mono">{formatTime(appointment.time)}</span>
+                      <span className="text-orange-600 font-medium">${(appointment.price || 0).toFixed(2)}</span>
+                    </div>
+                    
+                    {/* Action Buttons */}
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => handleDoneClick(appointment.id)}
+                        className="px-3 py-1 bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600 transition-colors"
+                        title="Mark as Done"
+                      >
+                        Done
+                      </button>
+                      <button
+                        onClick={() => onEdit(appointment.id)}
+                        className="px-3 py-1 bg-blue-500 text-white rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors"
+                        title="Edit Appointment"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(appointment.id)}
+                        className="px-3 py-1 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600 transition-colors"
+                        title="Delete Appointment"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Appointments List */}
       <div className="space-y-3">
