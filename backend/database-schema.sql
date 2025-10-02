@@ -91,8 +91,9 @@ CREATE POLICY "Allow all client operations" ON clients
 CREATE POLICY "Allow all appointment operations" ON appointments
     FOR ALL USING (true);
 
--- Create a view for earnings data
-CREATE VIEW earnings_summary AS
+-- Create a view for earnings data with proper security
+CREATE VIEW earnings_summary 
+WITH (security_invoker = true) AS
 SELECT 
     DATE_TRUNC('day', date) as date,
     COUNT(*) as appointments,
@@ -108,3 +109,6 @@ GRANT USAGE ON SCHEMA public TO anon, authenticated;
 GRANT ALL ON ALL TABLES IN SCHEMA public TO anon, authenticated;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated;
 GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO anon, authenticated;
+
+-- Grant permissions for the earnings view
+GRANT SELECT ON public.earnings_summary TO anon, authenticated;
