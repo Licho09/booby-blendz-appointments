@@ -3,7 +3,7 @@ import { authAPI } from '../services/api';
 
 interface User {
   id: string;
-  email: string;
+  username: string;
 }
 
 interface AuthState {
@@ -35,7 +35,7 @@ export const useAuth = () => {
     checkAuth();
   }, []);
 
-  const login = async (credentials: { email: string; password: string }) => {
+  const login = async (credentials: { username: string; password: string }) => {
     setAuthState(prev => ({ ...prev, isLoading: true }));
     
     try {
@@ -59,7 +59,7 @@ export const useAuth = () => {
     }
   };
 
-  const signup = async (userData: { email: string; password: string; confirmPassword: string }) => {
+  const signup = async (userData: { username: string; password: string; confirmPassword: string }) => {
     if (userData.password !== userData.confirmPassword) {
       return { success: false, error: 'Passwords do not match' };
     }
@@ -68,7 +68,7 @@ export const useAuth = () => {
     
     try {
       const response = await authAPI.register({
-        email: userData.email,
+        username: userData.username,
         password: userData.password
       });
       

@@ -207,7 +207,7 @@ function App() {
     ? clients.find(client => client.id === selectedClientId)
     : undefined;
 
-  const handleLogin = async (credentials: { email: string; password: string }) => {
+  const handleLogin = async (credentials: { username: string; password: string }) => {
     const result = await login(credentials);
     if (!result.success) {
       // Handle login error
@@ -216,7 +216,7 @@ function App() {
     }
   };
 
-  const handleSignup = async (userData: { email: string; password: string; confirmPassword: string }) => {
+  const handleSignup = async (userData: { username: string; password: string; confirmPassword: string }) => {
     const result = await signup(userData);
     if (!result.success) {
       // Handle signup error

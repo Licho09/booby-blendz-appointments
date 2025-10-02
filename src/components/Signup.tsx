@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Lock, Eye, EyeOff, Mail } from 'lucide-react';
+import { Lock, Eye, EyeOff, User } from 'lucide-react';
 
 interface SignupProps {
-  onSignup: (userData: { email: string; password: string; confirmPassword: string }) => void;
+  onSignup: (userData: { username: string; password: string; confirmPassword: string }) => void;
   onSwitchToLogin: () => void;
   isLoading?: boolean;
 }
 
 const Signup: React.FC<SignupProps> = ({ onSignup, onSwitchToLogin, isLoading = false }) => {
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: '',
     confirmPassword: ''
   });
@@ -45,8 +45,8 @@ const Signup: React.FC<SignupProps> = ({ onSignup, onSwitchToLogin, isLoading = 
       newErrors.password = 'Password must be at least 6 characters';
     }
     
-    if (!formData.email.includes('@')) {
-      newErrors.email = 'Please enter a valid email';
+    if (formData.username.length < 3) {
+      newErrors.username = 'Username must be at least 3 characters';
     }
     
     if (Object.keys(newErrors).length > 0) {
@@ -85,29 +85,29 @@ const Signup: React.FC<SignupProps> = ({ onSignup, onSwitchToLogin, isLoading = 
 
           {/* Signup Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email Field */}
+            {/* Username Field */}
             <div className="space-y-2">
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                Username
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
+                  <User className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  placeholder="Type your email"
+                  id="username"
+                  type="text"
+                  value={formData.username}
+                  onChange={(e) => handleInputChange('username', e.target.value)}
+                  placeholder="Type your username"
                   className={`block w-full pl-10 pr-3 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                    errors.email ? 'border-red-500' : 'border-gray-300'
+                    errors.username ? 'border-red-500' : 'border-gray-300'
                   }`}
                   required
                 />
               </div>
-              {errors.email && (
-                <p className="text-sm text-red-600">{errors.email}</p>
+              {errors.username && (
+                <p className="text-sm text-red-600">{errors.username}</p>
               )}
             </div>
 

@@ -92,7 +92,7 @@ const apiRequest = async (
 
 // Authentication API
 export const authAPI = {
-  register: async (userData: { email: string; password: string }) => {
+  register: async (userData: { username: string; password: string }) => {
     const response = await apiRequest('/auth/register', {
       method: 'POST',
       body: JSON.stringify(userData),
@@ -106,7 +106,7 @@ export const authAPI = {
     return response;
   },
 
-  login: async (credentials: { email: string; password: string }) => {
+  login: async (credentials: { username: string; password: string }) => {
     const response = await apiRequest('/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
