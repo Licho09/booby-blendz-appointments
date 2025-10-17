@@ -27,3 +27,5 @@ SELECT id, client_id, title, date, status, price
 FROM appointments 
 ORDER BY created_at DESC 
 LIMIT 5;
+
+

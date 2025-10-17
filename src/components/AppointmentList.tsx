@@ -13,7 +13,6 @@ interface AppointmentListProps {
   error?: string | null;
   onRetry?: () => void;
   initialFilter?: 'all' | 'today' | 'upcoming' | 'pending' | 'completed';
-  onCreateAppointment?: () => void;
 }
 
 const AppointmentList: React.FC<AppointmentListProps> = ({ 
@@ -23,8 +22,10 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
   onDelete, 
   onMarkComplete,
   theme,
-  initialFilter = 'today',
-  onCreateAppointment
+  isLoading = false,
+  error = null,
+  onRetry,
+  initialFilter = 'today'
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState<'all' | 'today' | 'upcoming' | 'pending' | 'completed'>(initialFilter);
@@ -225,7 +226,52 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
         </div>
       </div>
 
+      {/* Loading State */}
+      {isLoading && (
+        <div className="flex items-center justify-center py-12">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            <p className={`text-lg font-medium ${
+              theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+            }`}>
+              Loading appointments...
+            </p>
+            <p className={`text-sm ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+            }`}>
+              Please wait while we fetch your appointments
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && !isLoading && (
+        <div className={`p-4 rounded-xl border-l-4 border-red-500 ${
+          theme === 'dark' ? 'bg-red-900/20 text-red-200' : 'bg-red-50 text-red-800'
+        }`}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+              <div>
+                <p className="font-medium">Failed to load appointments</p>
+                <p className="text-sm opacity-90">{error}</p>
+              </div>
+            </div>
+            {onRetry && (
+              <button
+                onClick={onRetry}
+                className="px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600 transition-colors"
+              >
+                Retry
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Search and Filter */}
+      {!isLoading && !error && (
       <div className="space-y-3">
         <div className="relative">
           <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${
@@ -353,7 +399,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
           </div>
         )}
       </div>
-
+      )}
 
       {/* Old Pending Appointments Section - Only shows when button is clicked */}
       {showOldAppointmentsSection && getOldPendingAppointments().length > 0 && (
@@ -515,6 +561,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
       )}
 
       {/* Appointments List */}
+      {!isLoading && !error && (
       <div className="space-y-3">
         {filteredAppointments.length === 0 ? (
           <div className={`text-center py-12 ${
@@ -1047,7 +1094,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
           })()
         )}
       </div>
-
+      )}
 
       {/* Price Input Modal */}
       {showPriceModal && (

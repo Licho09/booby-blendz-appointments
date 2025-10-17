@@ -47,3 +47,5 @@ COMMENT ON FUNCTION public.update_updated_at_column() IS 'Secure trigger functio
 
 -- 4. Grant appropriate permissions
 GRANT EXECUTE ON FUNCTION public.update_updated_at_column() TO anon, authenticated;
+
+

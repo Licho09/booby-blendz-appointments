@@ -32,15 +32,25 @@ const apiRequest = async (
 
   // Create abort controller for timeout
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+  let timeoutId: number | null = null;
 
   try {
+    // Set timeout
+    timeoutId = setTimeout(() => {
+      controller.abort();
+    }, 15000); // Increased to 15 seconds
+
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...config,
       signal: controller.signal,
     });
     
-    clearTimeout(timeoutId);
+    // Clear timeout if request succeeds
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+
     const data = await response.json();
 
     // Check for authentication errors (401, 403)
@@ -76,16 +86,31 @@ const apiRequest = async (
 
     return data;
   } catch (error) {
-    clearTimeout(timeoutId);
+    // Clear timeout on error
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
     
     // Retry logic for network errors (but not for auth errors)
-    if (retries > 0 && (error instanceof Error && (error.name === 'AbortError' || error.message.includes('fetch')))) {
+    if (retries > 0 && (error instanceof Error && (error.name === 'AbortError' || error.message.includes('fetch') || error.message.includes('Network')))) {
       console.log(`Retrying API request (${endpoint}), attempts left: ${retries}`);
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
+      await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds before retry
       return apiRequest(endpoint, options, retries - 1);
     }
     
     console.error(`API Error (${endpoint}):`, error);
+    
+    // Provide more specific error messages
+    if (error instanceof Error) {
+      if (error.name === 'AbortError') {
+        throw new Error('Request timed out. Please check your internet connection and try again.');
+      }
+      if (error.message.includes('fetch')) {
+        throw new Error('Network error. Please check your internet connection and try again.');
+      }
+    }
+    
     throw error;
   }
 };

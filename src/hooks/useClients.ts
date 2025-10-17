@@ -56,8 +56,8 @@ export function useClients() {
       console.error('Failed to load clients:', err);
       
       // If it's a network error, show a more user-friendly message
-      if (errorMessage.includes('fetch') || errorMessage.includes('network')) {
-        setError('Unable to connect to the server. Please check your internet connection.');
+      if (errorMessage.includes('fetch') || errorMessage.includes('AbortError') || errorMessage.includes('timed out') || errorMessage.includes('Network')) {
+        setError('Network connection issue. Please check your internet and try again.');
       }
     } finally {
       setIsLoading(false);

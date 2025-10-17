@@ -384,7 +384,6 @@ function App() {
             isLoading={dataLoading}
             error={dataError}
             onRetry={refreshAll}
-            onCreateAppointment={() => setShowAppointmentForm(true)}
           />
         )}
         

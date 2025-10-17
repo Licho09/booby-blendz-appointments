@@ -56,7 +56,7 @@ export function useAppointments() {
       console.error('Failed to load appointments:', err);
       
       // If it's a network error, show a more user-friendly message
-      if (errorMessage.includes('fetch') || errorMessage.includes('AbortError')) {
+      if (errorMessage.includes('fetch') || errorMessage.includes('AbortError') || errorMessage.includes('timed out') || errorMessage.includes('Network')) {
         setError('Network connection issue. Please check your internet and try again.');
       }
     } finally {

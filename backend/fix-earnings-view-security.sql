@@ -23,3 +23,4 @@ GRANT SELECT ON public.earnings_summary TO anon, authenticated;
 
 -- Add a comment explaining the security model
 COMMENT ON VIEW public.earnings_summary IS 'Earnings summary view with security invoker - runs with querying user permissions';
+
